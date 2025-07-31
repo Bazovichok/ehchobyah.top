@@ -1,0 +1,47 @@
+
+
+body {
+    font-family: Arial, sans-serif;
+    background-image: #f0f0f0;
+    background-image: url('222.png');
+    
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+
+
+h1 {
+    font-family: 'DynaPuff', sans-serif;
+
+
+
+
+}
+
+header {
+    background-color: #58e067;
+    color: white;
+    padding: 20px;
+
+
+}
+
+button {
+    padding: 20px 27px;
+    font-size: 30px;
+    background-color: #cf1524;
+    color: white;
+    border: none;
+    cursor: pointer;
+
+}
+
+button:hover {
+    background-color: #58e067;
+}
+
+container {
+    max-width: 1200px; /*максимальную ширину */
+    margin: 0 auto; /* Центрирует контейнер на странице */
+    padding: 0 20px; /* Добавляет отступы слева и справа */
+}
