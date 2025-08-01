@@ -1,10 +1,17 @@
-            /* Биткоин */
+                                         /* Биткоин */
+
+@keyframes scrollBackground {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+}
 
 
 body {
     background-image: url('pizza.png');
     background-size: cover;
     background-position: center;
+animation: scrollBackground 11s linear infinite;
+
 }
 
 
