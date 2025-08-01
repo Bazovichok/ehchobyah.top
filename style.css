@@ -2,18 +2,18 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-image: #f0f0f0;
+    
     background-image: url('222.png');
     
     margin: 0;
     padding: 20px;
     text-align: center;
+    background-size: cover;
+    
 
 
 h1 {
     font-family: 'DynaPuff', sans-serif;
-
-
 
 
 }
@@ -44,4 +44,35 @@ container {
     max-width: 1200px; /*максимальную ширину */
     margin: 0 auto; /* Центрирует контейнер на странице */
     padding: 0 20px; /* Добавляет отступы слева и справа */
+}
+
+
+
+
+             /* Биткоин */
+
+
+
+#bitcoin-container {
+    border: 2px solid #000;
+    padding: 20px;
+    text-align: center;
+    margin: 10px auto;
+    max-width: 400px;
+
+}
+
+#bitcoin-rate {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+#update-button {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+#trend-arrow {
+    font-size: 24px;
+    color: green; /* Зеленый для роста, красный для падения */
 }
