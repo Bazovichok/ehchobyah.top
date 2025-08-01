@@ -1,0 +1,65 @@
+#reviews-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+#reviews-list {
+    margin-bottom: 20px;
+}
+
+.review-item p {
+    margin: 5px 0;
+    word-wrap: break-word; /* перенос слов на др строку */
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 3px;
+}
+
+.review-item p {
+    margin: 5px 0;
+}
+
+#review-form input, #review-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+#review-form button {
+    padding: 10px 20px;
+    background-color: #58e067;
+    color: black;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+#review-form button:hover {
+    background-color: #4caf50;
+}
+
+body {   
+    background-color: #000; /* Черный фон */
+}
+
+               /* анимация фона картинки */
+          
+@keyframes dvdAnimation {
+    0% { background-position: 0 0; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0 0; }
+}
+
+body {
+    background-image: url('otzivi.jpg'); /* фоновое изображение */
+    background-size: 600px;
+    background-position: center;
+    
+    animation: dvdAnimation 120s linear infinite;
+}
