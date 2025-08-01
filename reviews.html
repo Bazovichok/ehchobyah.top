@@ -9,6 +9,8 @@
 </head>
 <body>
     <div id="reviews-container">
+
+        <button id="toggle_music" class="music-button">♫</button>
         <h2>Книга жалоб и предложений</h2>
         <div id="reviews-list"></div>
         <form id="review-form">
@@ -16,10 +18,20 @@
             <textarea id="review-text" placeholder="Ваш отзыв" maxlength="500" required></textarea>
             <button type="submit">Оставить мнение</button>
              <a href="index.html">Вернуться на главную</a>
+           
+
         </form>
     </div>
     <script src="reviews.js"></script>
+
+<audio id="send_sound" src="send_sound.mp3" preload="auto"></audio>
+
+
+
+
 </body>
+             <audio id="background_music" src="background_music.mp3" loop autoplay></audio>
+
 </html>
 
 

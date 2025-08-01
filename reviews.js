@@ -1,3 +1,18 @@
+document.getElementById('toggle_music').addEventListener('click', function() {
+    var music = document.getElementById('background_music');
+    if (music.paused) {
+        music.play();
+        this.textContent = '♫'; // Иконка включенной музыки
+    } else {
+        music.pause();
+        this.textContent = '🔇'; // Иконка выключенной музыки
+    }
+});
+
+
+
+
+
 document.getElementById('review-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const nickname = document.getElementById('nickname').value;
@@ -13,5 +28,7 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
     
     document.getElementById('reviews-list').appendChild(reviewItem);
     
+    document.getElementById('send_sound').play();
     document.getElementById('review-form').reset();
+
 });

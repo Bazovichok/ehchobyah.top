@@ -3,7 +3,7 @@
     margin: 20px auto;
     padding: 20px;
     background-color: #f9f9f9;
-    border-radius: 5px;
+    border-radius: 15px;
 }
 
 #reviews-list {
@@ -15,8 +15,9 @@
     word-wrap: break-word; /* перенос слов на др строку */
     margin-bottom: 10px;
     padding: 10px;
-    background-color: #fff;
-    border-radius: 3px;
+    background-color: #ede8e8;
+    border-radius: 5px;
+
 }
 
 .review-item p {
@@ -25,10 +26,11 @@
 
 #review-form input, #review-form textarea {
     width: 100%;
-    padding: 10px;
+    padding: 7px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
-    border-radius: 3px;
+    border-radius: 15px;
+
 }
 
 #review-form button {
@@ -37,7 +39,7 @@
     color: black;
     border: none;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 20px;
 }
 
 #review-form button:hover {
@@ -62,4 +64,19 @@ body {
     background-position: center;
     
     animation: dvdAnimation 120s linear infinite;
+}
+
+
+                  
+
+.music-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #58e067;
 }

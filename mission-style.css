@@ -1,0 +1,32 @@
+body {
+    background-color: #e082c9;
+}
+
+.mission-container {
+    max-width: 1000px;
+    margin: 300px auto;
+    text-align: center;
+}
+
+.mission-text {
+    background-color: white;
+    border-radius: 20px;
+    padding: 50px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    font-size: 25px; 
+}
+
+.back-button {
+    padding: 20px 40px;
+    background-color: #58e067;
+    color: black;
+    border: none;
+    cursor: pointer;
+    border-radius: 50px;
+    font-size: 24px;
+}
+
+.back-button:hover {
+    background-color: #4caf50;
+}
