@@ -1,6 +1,3 @@
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
-
 document.getElementById('toggle_music').addEventListener('click', function() {
     var music = document.getElementById('background_music');
     if (music.paused) {
@@ -23,9 +20,6 @@ function displayReview(review) {
     document.getElementById('reviews-list').appendChild(reviewItem);
 }
 
-
-
-
 document.getElementById('review-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const nickname = document.getElementById('nickname').value;
@@ -44,6 +38,7 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
             // Отображаем отзыв на странице
             displayReview(reviewItem);
             document.getElementById('review-form').reset();
+            document.getElementById('send_sound').play();
         })
         .catch((error) => {
             console.error('Ошибка при сохранении отзыва:', error);
@@ -59,10 +54,4 @@ window.addEventListener('load', function() {
             }
         });
     });
-});
-  
-    
-    document.getElementById('send_sound').play();
-    document.getElementById('review-form').reset();
-
 });

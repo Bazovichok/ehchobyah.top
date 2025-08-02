@@ -9,48 +9,33 @@
 </head>
 <body>
     <div id="reviews-container">
-
         <button id="toggle_music" class="music-button">♫</button>
         <h2>Книга жалоб и предложений</h2>
         <div id="reviews-list"></div>
         <form id="review-form">
             <input type="text" id="nickname" placeholder="Ваше ИМЯ" required>
-            <textarea id="review-text" placeholder="Ваш отзыв" maxlength="500" required></textarea>
+            <textarea id="review-text" placeholder="Ваш комментарий" maxlength="500" required></textarea>
             <button type="submit">Оставить мнение</button>
-             <a href="index.html">Вернуться на главную</a>
-           
-
+            <a href="index.html">Вернуться на главную</a>
         </form>
     </div>
+    <audio id="send_sound" src="send_sound.mp3" preload="auto"></audio>
+    <audio id="background_music" src="background_music.mp3" loop autoplay></audio>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    <script>
+        // Ваша конфигурация Firebase
+        var firebaseConfig = {
+            apiKey: "AIzaSyBWTq4kFtsD0dFUc5ZlrCAcXUmi9p-JiTE",
+            authDomain: "ehchobyahzavoz.firebaseapp.com",
+            projectId: "ehchobyahzavoz",
+            storageBucket: "ehchobyahzavoz.firebasestorage.app",
+            messagingSenderId: "196426611905",
+            appId: "1:196426611905:web:be91e86e1ac8964877a840"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
     <script src="reviews.js"></script>
-
-<audio id="send_sound" src="send_sound.mp3" preload="auto"></audio>
-
-
-
-
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
-
-
-<script>
-  // Ваша конфигурация Firebase
-  var firebaseConfig = {
-    apiKey: "AIzaSyBWTq4kFtsD0dFUc5ZlrCAcXUmi9p-JiTE",
-    authDomain: "ehchobyahzavoz.firebaseapp.com",
-    projectId: "ehchobyahzavoz",
-    storageBucket: "ehchobyahzavoz.firebasestorage.app",
-    messagingSenderId: "196426611905",
-    appId: "1:196426611905:web:be91e86e1ac8964877a840"
-  };
-  firebase.initializeApp(firebaseConfig);
-</script>
-
-
-
 </body>
-      <audio id="background_music" src="background_music.mp3" loop autoplay></audio>
-
 </html>
-
-
-
