@@ -1,4 +1,5 @@
-import { collection, addDoc, onSnapshot } from "firebase/firestore";
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
 
 document.getElementById('toggle_music').addEventListener('click', function() {
     var music = document.getElementById('background_music');
@@ -10,6 +11,17 @@ document.getElementById('toggle_music').addEventListener('click', function() {
         this.textContent = '🔇'; // Иконка выключенной музыки
     }
 });
+
+function displayReview(review) {
+    const reviewItem = document.createElement('div');
+    reviewItem.classList.add('review-item');
+    reviewItem.innerHTML = `
+        <p><strong>${review.nickname}</strong> - ${review.date}</p>
+        <p>${review.reviewText}</p>
+    `;
+    
+    document.getElementById('reviews-list').appendChild(reviewItem);
+}
 
 
 
@@ -27,7 +39,7 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
     };
     
     // Сохраняем отзыв в Firestore
-    addDoc(collection(firebase.firestore(), 'reviews'), reviewItem)
+    firebase.firestore().collection('reviews').add(reviewItem)
         .then(() => {
             // Отображаем отзыв на странице
             displayReview(reviewItem);
@@ -40,7 +52,7 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
 
 // Загружаем сохраненные отзывы при загрузке страницы
 window.addEventListener('load', function() {
-    onSnapshot(collection(firebase.firestore(), 'reviews'), (snapshot) => {
+    firebase.firestore().collection('reviews').onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
             if (change.type === 'added') {
                 displayReview(change.doc.data());
@@ -48,19 +60,8 @@ window.addEventListener('load', function() {
         });
     });
 });
-   
-
-function displayReview(review) {
-    const reviewItem = document.createElement('div');
-    reviewItem.classList.add('review-item');
-    reviewItem.innerHTML = `
-        <p><strong>${review.nickname}</strong> - ${review.date}</p>
-        <p>${review.reviewText}</p>
-    `;
-
- 
-    document.getElementById('reviews-list').appendChild(reviewItem);
-  }  
+  
+    
     document.getElementById('send_sound').play();
     document.getElementById('review-form').reset();
 
