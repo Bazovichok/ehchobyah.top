@@ -50,11 +50,17 @@ window.addEventListener('load', function() {
 });
    
 
-
+function displayReview(review) {
+    const reviewItem = document.createElement('div');
+    reviewItem.classList.add('review-item');
+    reviewItem.innerHTML = `
+        <p><strong>${review.nickname}</strong> - ${review.date}</p>
+        <p>${review.reviewText}</p>
+    `;
 
  
     document.getElementById('reviews-list').appendChild(reviewItem);
-    
+  }  
     document.getElementById('send_sound').play();
     document.getElementById('review-form').reset();
 
