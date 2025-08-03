@@ -1,0 +1,20 @@
+#news-container {
+    max-width: 800px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+#news-list {
+    margin-top: 20px;
+}
+
+.news-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.news-item p {
+    margin: 5px 0;
+}
