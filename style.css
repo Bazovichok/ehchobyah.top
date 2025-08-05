@@ -1,12 +1,44 @@
 
 
 body {
-    font-family: Arial, sans-serif; 
-    background-image: url('222.png');    
-    margin: 0;
-    padding: 20px;  
+    font-family: Arial, sans-serif;    
+    background-image: url('background_light.png');    
+    background-color: white;
+    color: #333;
+    margin: ;
+    padding: 15px;  
     background-size: cover;
     
+
+}
+
+/* Темный режим */
+body.dark-mode {
+    background-image: url('background_dark.png'); /* Путь к темной версии изображения */
+    background-color: black; /* Чёрный фон для темного режима */
+    color: white; /* Цвет текста для читаемости в темном режиме */
+}
+
+/* Стили для кнопки переключения */
+#dark-mode-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333; /* Цвет иконки в светлом режиме */
+}
+
+body.dark-mode #dark-mode-toggle {
+    color: white; /* Цвет иконки в темном режиме */
+}
+
+
+
+
+
 
 h1 {
     font-family: 'DynaPuff', sans-serif;
@@ -42,7 +74,8 @@ container {
     padding: 0 20px; /* Добавляет отступы слева и справа */
 }
 
+.dark-mode a, .dark-mode p {
+    color: white;
+}
 
 
-
- 
