@@ -36,33 +36,42 @@ body.dark-mode #dark-mode-toggle {
 }
 
 
-
-
-
-
 h1 {
     font-family: 'DynaPuff', sans-serif;
-
+    
 
 }
 
 header {
     background-color: #58e067;
-    color: white;
+    color: #431b4d;
     padding: 20px;
-
-
-}
-
-button {
-    padding: 19px 27px;
-    font-size: 25px;
-    background-color: #cf1524;
-    color: white;
-    border: none;
-    cursor: pointer;
+    verflow: hidden; /* Скрывает текст за пределами рамки */
 
 }
+
+.marquee {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap; /* Предотвращает перенос текста */
+}
+
+.marquee h1 {
+    display: inline-block;
+    padding-left: 100%; /* Начинаем анимацию за пределами контейнера */
+    animation: marquee 10s linear infinite; /* Анимация длится 15 секунд, линейная, бесконечная */
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+
 
 button:hover {
     background-color: #58e067;
