@@ -5,7 +5,7 @@ body {
     background-image: url('background_light.png');    
     background-color: white;
     color: #333;
-    margin: ;
+    margin: 20px;
     padding: 15px;  
     background-size: cover;
     
@@ -22,11 +22,11 @@ body.dark-mode {
 /* Стили для кнопки переключения */
 #dark-mode-toggle {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 5px;
+    right: 3px;
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 27px;
     cursor: pointer;
     color: #333; /* Цвет иконки в светлом режиме */
 }
