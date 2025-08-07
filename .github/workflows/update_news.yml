@@ -1,16 +1,19 @@
 name: Update News
+
 on:
   schedule:
     - cron: '0 * * * *' # каждый час
+  workflow_dispatch: # позволяет запускать вручную
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16' # обновлено до более новой версии
       - name: Install dependencies
         run: npm install axios cheerio
       - name: Fetch and parse news
