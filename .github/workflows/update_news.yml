@@ -14,11 +14,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'npm' # кэширование работает с package-lock.json
+          cache: 'npm'
+      - name: Clear npm cache
+        run: npm cache clean --force
       - name: Install dependencies
         run: npm install
       - name: Fetch and parse news
         run: node fetch_news.js
+      - name: Debug news.json
+        run: |
+          ls -la
+          cat news.json || echo "news.json not found"
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
