@@ -13,9 +13,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # обновлено до более новой версии
+          node-version: '18' # обновлено до Node.js 18
+          cache: 'npm' # кэширование для ускорения
       - name: Install dependencies
-        run: npm install axios cheerio
+        run: npm install axios@1.6.0 cheerio@1.0.0-rc.12 --save-exact
       - name: Fetch and parse news
         run: node fetch_news.js
       - name: Commit changes
