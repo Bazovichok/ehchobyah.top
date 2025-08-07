@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Новости</title>
-  <link rel="stylesheet" href="styles.css"> <!-- Ваш существующий CSS -->
+  <link rel="stylesheet" href="styles.css">
   <style>
     .news-feed {
       max-height: 80vh;
@@ -21,6 +21,10 @@
       height: auto;
       border-radius: 8px;
     }
+    .error {
+      color: red;
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
@@ -34,26 +38,37 @@
     <div class="news-feed" id="feed"></div>
   </main>
   <script>
-    fetch('news.json')
-      .then(response => response.json())
+    fetch('news.json') // Попробуй '/ehchobyah.top/news.json' если не работает
+      .then(response => {
+        if (!response.ok) throw new Error(`Не удалось загрузить news.json: ${response.status}`);
+        return response.json();
+      })
       .then(posts => {
+        console.log('Полученные посты:', posts); // Для отладки
         const feed = document.getElementById('feed');
+        if (posts.length === 0) {
+          feed.innerHTML = '<p class="error">Нет доступных новостей</p>';
+          return;
+        }
         posts.forEach(post => {
           const div = document.createElement('div');
           div.className = 'post';
-          let content = `<p>${post.text || ''}</p>`;
+          let content = `<p>${post.text || 'Без текста'}</p>`;
           if (post.media) {
             if (post.media.type === 'photo') {
-              content += `<img src="${post.media.url}" alt="Изображение поста">`;
+              content += `<img src="${post.media.url}" alt="Изображение поста" onerror="this.alt='Ошибка загрузки изображения'">`;
             } else if (post.media.type === 'video') {
-              content += `<video controls><source src="${post.media.url}" type="video/mp4"></video>`;
+              content += `<video controls><source src="${post.media.url}" type="video/mp4" onerror="this.parentElement.innerHTML='Ошибка загрузки видео'"></video>`;
             }
           }
           div.innerHTML = content;
           feed.appendChild(div);
         });
       })
-      .catch(err => console.error('Ошибка загрузки новостей:', err));
+      .catch(err => {
+        console.error('Ошибка загрузки новостей:', err);
+        document.getElementById('feed').innerHTML = '<p class="error">Ошибка загрузки новостей. Проверьте консоль браузера.</p>';
+      });
   </script>
 </body>
 </html>
