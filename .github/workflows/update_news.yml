@@ -1,9 +1,7 @@
 name: Update News
-
 on:
   schedule:
     - cron: '0 * * * *' # каждый час
-
 jobs:
   build:
     runs-on: ubuntu-latest
