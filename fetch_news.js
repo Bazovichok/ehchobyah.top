@@ -53,17 +53,13 @@ async function main() {
     allPosts = allPosts.concat(posts);
   }
 
-  // Удаление дубликатов по URL
   const uniquePosts = Array.from(new Set(allPosts.map(p => p.url)))
     .map(url => allPosts.find(p => p.url === url));
 
-  // Сортировка по времени (новые сверху)
   uniquePosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-  // Ограничение до 50 постов
   const topPosts = uniquePosts.slice(0, 50);
 
-  // Сохранение в news.json
   fs.writeFileSync('news.json', JSON.stringify(topPosts, null, 2));
 }
 
