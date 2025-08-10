@@ -20,6 +20,28 @@ function displayReview(review) {
     document.getElementById('reviews-list').appendChild(reviewItem);
 }
 
+
+
+function sanitizeMsg(text) {
+  return text.replace(/<[^>]*>/g, "");
+}
+
+function displayReview(review) {
+  const reviewItem = document.createElement("div");
+  reviewItem.classList.add("review-item");
+  reviewItem.innerHTML = `
+        <p><strong>${sanitizeMsg(review.nickname)}</strong> - ${review.date}</p>
+        <p>${sanitizeMsg(review.reviewText)}</p>
+    `;
+
+  document.getElementById("reviews-list").appendChild(reviewItem);
+}
+
+
+
+
+
+
 document.getElementById('review-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const nickname = document.getElementById('nickname').value;
@@ -32,7 +54,7 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
         date: date
     };
     
-    // Сохраняем отзыв в Firestore
+    // сохраняет отзыв в Firestore
     firebase.firestore().collection('reviews').add(reviewItem)
         .then(() => {
             // Отображаем отзыв на странице
@@ -45,7 +67,7 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
         });
 });
 
-// Загружаем сохраненные отзывы при загрузке страницы
+// загружает сохраненные отзывы при загрузке страницы
 window.addEventListener('load', function() {
     firebase.firestore().collection('reviews').onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
