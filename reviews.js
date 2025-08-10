@@ -21,27 +21,6 @@ function displayReview(review) {
 }
 
 
-
-function sanitizeMsg(text) {
-  return text.replace(/<[^>]*>/g, "");
-}
-
-function displayReview(review) {
-  const reviewItem = document.createElement("div");
-  reviewItem.classList.add("review-item");
-  reviewItem.innerHTML = `
-        <p><strong>${sanitizeMsg(review.nickname)}</strong> - ${review.date}</p>
-        <p>${sanitizeMsg(review.reviewText)}</p>
-    `;
-
-  document.getElementById("reviews-list").appendChild(reviewItem);
-}
-
-
-
-
-
-
 document.getElementById('review-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const nickname = document.getElementById('nickname').value;
@@ -73,7 +52,35 @@ window.addEventListener('load', function() {
         snapshot.docChanges().forEach((change) => {
             if (change.type === 'added') {
                 displayReview(change.doc.data());
-            }
+ 
+}
+function sanitizeMsg(text) {
+  return text.replace(/<[^>]*>/g, "");
+}
+
+function displayReview(review) {
+  const reviewItem = document.createElement("div");
+  reviewItem.classList.add("review-item");
+  reviewItem.innerHTML = `
+        <p><strong>${sanitizeMsg(review.nickname)}</strong> - ${review.date}</p>
+        <p>${sanitizeMsg(review.reviewText)}</p>
+    `;
+
+  document.getElementById("reviews-list").appendChild(reviewItem);
+
+
+
+
+
+
+
+
+
+
+
+
+
+           }
         });
     });
 });
