@@ -53,31 +53,6 @@ window.addEventListener('load', function() {
             if (change.type === 'added') {
                 displayReview(change.doc.data());
  
-}
-function sanitizeMsg(text) {
-  return text.replace(/<[^>]*>/g, "");
-}
-
-function displayReview(review) {
-  const reviewItem = document.createElement("div");
-  reviewItem.classList.add("review-item");
-  reviewItem.innerHTML = `
-        <p><strong>${sanitizeMsg(review.nickname)}</strong> - ${review.date}</p>
-        <p>${sanitizeMsg(review.reviewText)}</p>
-    `;
-
-  
-
-
-
-
-
-
-
-
-
-
-
 
 
            }
