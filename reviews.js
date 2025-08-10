@@ -66,7 +66,7 @@ function displayReview(review) {
         <p>${sanitizeMsg(review.reviewText)}</p>
     `;
 
-  document.getElementById("reviews-list").appendChild(reviewItem);
+  
 
 
 
