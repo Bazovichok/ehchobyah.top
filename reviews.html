@@ -1,32 +1,40 @@
+<!-- Updated reviews.html -->
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Книга жалоб и предложений</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="reviews-style.css">
 </head>
 <body>
+    <button id="toggle_music" class="music-button">♫</button>
     <div id="reviews-container">
-        <button id="toggle_music" class="music-button">♫</button>
-        <h2>Книга жалоб и предложений</h2>
+        <h1>Книга жалоб и предложений</h1>
         <div id="reviews-list"></div>
         <form id="review-form">
-            <input type="text" id="nickname" placeholder="Ваше ИМЯ" required>
-            <textarea id="review-text" placeholder="Ваш комментарий" maxlength="500" required></textarea>
+            <input type="text" id="nickname" placeholder="Ваше ИМЯ" required maxlength="30">
+            <textarea id="review-text" placeholder="Ваш комментарий" required></textarea>
+            <input type="file" id="review-image" accept="image/jpeg,image/png,image/gif"> <!-- Ограничение форматов -->
             <button type="submit">Оставить мнение</button>
             <a href="index.html">Вернуться на главную</a>
         </form>
     </div>
-    <audio id="send_sound" src="send_sound.mp3" preload="auto"></audio>
-    <audio id="background_music" src="background_music.mp3" loop autoplay></audio>
+
+    <audio id="background_music" loop>
+        <source src="background_music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="send_sound">
+        <source src="send_sound.mp3" type="audio/mpeg">
+    </audio>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+                                      <!-- Added for storage -->
     <script>
-        // Ваша конфигурация Firebase
-        var firebaseConfig = {
+        // Firebase config 
+        const firebaseConfig = {
             apiKey: "AIzaSyBWTq4kFtsD0dFUc5ZlrCAcXUmi9p-JiTE",
             authDomain: "ehchobyahzavoz.firebaseapp.com",
             projectId: "ehchobyahzavoz",

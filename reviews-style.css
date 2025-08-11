@@ -1,3 +1,5 @@
+/* Updated reviews-style.css (added styles for file input and images) */
+
 #reviews-container {
     max-width: 600px;
     margin: 20px auto;
@@ -17,7 +19,6 @@
     padding: 10px;
     background-color: #ede8e8;
     border-radius: 5px;
-
 }
 
 .review-item p {
@@ -30,7 +31,11 @@
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 15px;
+}
 
+#review-form input[type="file"] {
+    border: none;
+    padding: 0;
 }
 
 #review-form button {
@@ -50,7 +55,7 @@ body {
     background-color: #000; /* Черный фон */
 }
 
-               /* анимация фона картинки */
+/* анимация фона картинки */
           
 @keyframes dvdAnimation {
     0% { background-position: 0 0; }
@@ -65,9 +70,6 @@ body {
     
     animation: dvdAnimation 120s linear infinite;
 }
-
-
-                  
 
 .music-button {
     position: absolute;
