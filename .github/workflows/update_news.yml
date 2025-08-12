@@ -29,6 +29,6 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add news.json
+          git add -f news.json # Принудительное добавление
           git commit -m "Update news.json" || git commit --allow-empty -m "Force commit news.json"
           git push

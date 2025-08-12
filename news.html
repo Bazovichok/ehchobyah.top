@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Новости</title>
-  <link rel="stylesheet" href="/ehchobyah.top/news.css">
+  <link rel="stylesheet" href="news.css">
 </head>
 <body>
   <header>
@@ -17,7 +17,7 @@
     <div class="news-feed" id="feed"></div>
   </main>
   <script>
-    fetch('/ehchobyah.top/news.json')
+    fetch('news.json')
       .then(response => {
         if (!response.ok) throw new Error(`Не удалось загрузить news.json: ${response.status}`);
         return response.json();
