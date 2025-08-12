@@ -16,7 +16,17 @@ async function fetchPosts(channel) {
       const url = postEl.find('a.tgme_widget_message_date').attr('href') || '';
       const timestamp = postEl.find('time').attr('datetime') || new Date().toISOString();
       const textEl = postEl.find('div.tgme_widget_message_text');
-      const text = textEl.length ? textEl.text().trim() : '';
+      let text = textEl.length ? textEl.html() : '';
+      
+      // Удаляем ссылки, сохраняя остальной текст и HTML (для эмодзи и форматирования)
+      if (text) {
+        const $text = cheerio.load(text);
+        $text('a').replaceWith(''); // Удаляем теги <a>
+        text = $text.html().trim();
+      } else {
+        text = '';
+      }
+
       const photoEl = postEl.find('a.tgme_widget_message_photo_wrap');
       const videoEl = postEl.find('video source, video');
       let media = null;
