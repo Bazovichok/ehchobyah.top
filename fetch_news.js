@@ -3,17 +3,13 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 
 const channels = ['avenuegang1', 'avenuemp3', 'vtrende_music'];
-const maxPages = 10; // Макс страниц на канал
-const minDate = new Date('2025-07-13T00:00:00Z'); // Последний месяц
 
-async function fetchPosts(channel, before = null) {
+async function fetchPosts(channel) {
   try {
-    let url = `https://t.me/s/${channel}`;
-    if (before) url += `?before=${before}`;
+    const url = `https://t.me/s/${channel}`;
     const response = await axios.get(url, { timeout: 10000 });
     const $ = cheerio.load(response.data);
     const posts = [];
-    let oldestId = Infinity;
 
     $('div.tgme_widget_message').each((i, el) => {
       const postEl = $(el);
@@ -45,36 +41,30 @@ async function fetchPosts(channel, before = null) {
         }
       });
 
-      // Dedup медиа
+      // Dedup медиа по URL
       const uniqueMedia = [...new Set(media.map(m => m.url))].map(url => media.find(m => m.url === url));
 
       if (url && !text.toLowerCase().includes('#реклама') && !text.toLowerCase().includes('розыгрыш')) {
         posts.push({ url, timestamp, text, media: uniqueMedia });
-        const msgId = parseInt(url.split('/').pop()) || 0;
-        if (msgId < oldestId) oldestId = msgId;
       }
     });
 
-    return { posts, nextBefore: oldestId > 0 ? oldestId : null };
+    return posts;
   } catch (error) {
     console.error(`Ошибка при загрузке канала ${channel}:`, error.message);
-    return { posts: [], nextBefore: null };
+    return [];
   }
 }
 
 async function main() {
   let allPosts = [];
   for (const channel of channels) {
-    let before = null;
-    for (let page = 0; page < maxPages; page++) {
-      const { posts, nextBefore } = await fetchPosts(channel, before);
-      allPosts = allPosts.concat(posts);
-      if (!nextBefore || new Date(posts[posts.length - 1]?.timestamp || 0) < minDate) break;
-      before = nextBefore;
-    }
+    const posts = await fetchPosts(channel);
+    allPosts = allPosts.concat(posts);
   }
 
-  const uniquePosts = [...new Set(allPosts.map(p => p.url))].map(url => allPosts.find(p => p.url === url));
+  const uniquePosts = Array.from(new Set(allPosts.map(p => p.url)))
+    .map(url => allPosts.find(p => p.url === url));
 
   uniquePosts.sort((a, b) => {
     const timeA = new Date(a.timestamp);
@@ -84,7 +74,7 @@ async function main() {
     return timeB - timeA;
   });
 
-  const topPosts = uniquePosts.filter(p => new Date(p.timestamp) >= minDate).slice(0, 300);
+  const topPosts = uniquePosts.slice(0, 200); // Увеличен лимит
 
   fs.writeFileSync('news.json', JSON.stringify(topPosts, null, 2));
 }

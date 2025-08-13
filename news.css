@@ -2,7 +2,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 3px;
-  background-color: #d0d0d0; /* Темнее */
+  background-color: #e0e0e0; /* Темнее */
   color: #333;
 }
 
@@ -23,11 +23,11 @@ nav a {
   margin: 0 auto;
   max-height: 80vh;
   overflow-y: auto;
-  padding: 33px 15px 10px; /* Удлинена, поджата снизу */
+  padding: 30px 15px 15px; /* Поджата снизу */
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); /* Выразительная тень */
-  position: relative;
+  border-radius: 8px; /* Закруглённые углы с обеих сторон */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Выразительная тень */
+  position: relative; /* Для градиентов */
 }
 
 .news-feed::before, .news-feed::after {
@@ -35,19 +35,19 @@ nav a {
   position: absolute;
   left: 0;
   right: 0;
-  height: 30px;
+  height: 20px;
   pointer-events: none;
   z-index: 1;
 }
 
 .news-feed::before {
   top: 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));
+  background: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); /* Размытие сверху */
 }
 
 .news-feed::after {
   bottom: 0;
-  background: linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0));
+  background: linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0)); /* Размытие снизу */
 }
 
 .post {
@@ -55,13 +55,11 @@ nav a {
   padding: 15px;
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25); /* Выразительная тень */
-  border: 1px solid #888; /* Еле заметная обводка */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Более выразительная тень по всей рамке */
   text-align: center;
 }
 
 .post p {
-  font-family: 'Segoe UI Emoji', sans-serif; /* Для эмодзи */
   font-size: 1.2em;
   color: #1a1a1a;
   margin: 10px 0;
@@ -72,16 +70,9 @@ nav a {
   margin-right: auto;
 }
 
-.post blockquote {
-  border-left: 4px solid #ccc;
-  padding-left: 10px;
-  color: #666;
-  margin: 10px 0;
-}
-
 .media-group {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Меньше размер */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Меньше размер при больше файлах */
   gap: 10px;
   margin: 10px auto;
   max-width: 500px;
@@ -103,7 +94,7 @@ nav a {
   max-width: 90%;
   max-height: 90%;
   z-index: 1000;
-  background-color: #000; /* Как раньше */
+  background-color: rgba(0, 0, 0, 0.8);
   padding: 10px;
 }
 
