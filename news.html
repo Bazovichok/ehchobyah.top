@@ -19,7 +19,7 @@
   <script>
     let posts = [];
     let currentIndex = 0;
-    const batchSize = 30; // Увеличен для более плавной подгрузки
+    const batchSize = 30;
 
     fetch('news.json')
       .then(response => {
@@ -50,7 +50,7 @@
         div.className = 'post';
         let content = post.text ? `<p>${post.text}</p>` : '<p>Без текста</p>';
         if (post.media && post.media.length > 0) {
-          content += '<div class="media-group" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">'; // Динамический размер
+          content += '<div class="media-group">';
           post.media.forEach(mediaItem => {
             if (mediaItem.type === 'photo') {
               content += `<img src="${mediaItem.url}" alt="Изображение поста" class="media-item" onclick="toggleFullSize(this)">`;
