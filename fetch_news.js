@@ -18,7 +18,6 @@ async function fetchPosts(channel) {
       const textEl = postEl.find('div.tgme_widget_message_text');
       let text = textEl.length ? textEl.html() : '';
       
-      // Удаляем ссылки, сохраняя остальной текст и HTML
       if (text) {
         const $text = cheerio.load(text);
         $text('a').replaceWith('');
@@ -27,7 +26,6 @@ async function fetchPosts(channel) {
         text = '';
       }
 
-      // Собираем все медиа (фото/видео)
       const media = [];
       postEl.find('a.tgme_widget_message_photo_wrap').each((j, mediaEl) => {
         const style = $(mediaEl).attr('style') || '';
@@ -43,8 +41,11 @@ async function fetchPosts(channel) {
         }
       });
 
+      // Dedup медиа по URL
+      const uniqueMedia = [...new Set(media.map(m => m.url))].map(url => media.find(m => m.url === url));
+
       if (url && !text.toLowerCase().includes('#реклама') && !text.toLowerCase().includes('розыгрыш')) {
-        posts.push({ url, timestamp, text, media });
+        posts.push({ url, timestamp, text, media: uniqueMedia });
       }
     });
 
@@ -62,21 +63,18 @@ async function main() {
     allPosts = allPosts.concat(posts);
   }
 
-  // Удаление дубликатов по URL
   const uniquePosts = Array.from(new Set(allPosts.map(p => p.url)))
     .map(url => allPosts.find(p => p.url === url));
 
-  // Сортировка по московскому времени (UTC+3)
   uniquePosts.sort((a, b) => {
     const timeA = new Date(a.timestamp);
-    timeA.setHours(timeA.getHours() + 3); // Moscow time
+    timeA.setHours(timeA.getHours() + 3);
     const timeB = new Date(b.timestamp);
     timeB.setHours(timeB.getHours() + 3);
-    return timeB - timeA; // Новые сверху
+    return timeB - timeA;
   });
 
-  // Ограничение до 100 постов для прокрутки
-  const topPosts = uniquePosts.slice(0, 100);
+  const topPosts = uniquePosts.slice(0, 200); // Увеличен лимит
 
   fs.writeFileSync('news.json', JSON.stringify(topPosts, null, 2));
 }
