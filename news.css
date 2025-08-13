@@ -19,43 +19,62 @@ nav a {
 }
 
 .news-feed {
-  max-width: 600px; /* Ограничиваем ширину для центрирования */
-  margin: 0 auto; /* Центрируем ленту */
+  max-width: 600px;
+  margin: 0 auto;
   max-height: 80vh;
   overflow-y: auto;
-  padding: 15px;
+  padding: 30px 15px 20px; /* Удлинена сверху больше */
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Заметная тень */
 }
 
 .post {
-  margin-bottom: 25px;
-  padding: 10px;
-  border-bottom: 2px solid #555; /* Выразительная тёмная линия */
-  text-align: center; /* Центрируем содержимое поста */
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 12px; /* Закруглённые углы как в Telegram */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Тень для "островка" */
+  text-align: center;
 }
 
 .post p {
-  font-size: 1.2em; /* Чуть крупнее */
-  color: #1a1a1a; /* Тёмный текст */
+  font-size: 1.2em;
+  color: #1a1a1a;
   margin: 10px 0;
-  line-height: 1.5; /* Улучшает читаемость */
-  word-wrap: break-word; /* Перенос текста */
-  max-width: 500px; /* Ограничиваем ширину текста под медиа */
+  line-height: 1.5;
+  word-wrap: break-word;
+  max-width: 500px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.post img,
-.post video {
+.media-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin: 10px auto;
+  max-width: 500px;
+}
+
+.media-item {
   width: 100%;
-  max-width: 500px; /* Единый размер для медиа */
-  height: 300px; /* Фиксированная высота */
-  object-fit: cover; /* Сохраняет пропорции, обрезая края */
+  height: auto;
+  object-fit: contain; /* Не обрезает */
   border-radius: 8px;
-  display: block;
-  margin: 0 auto; /* Центрируем медиа */
+  cursor: pointer;
+}
+
+.media-item.full-size {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 90%;
+  max-height: 90%;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 10px;
 }
 
 .error {

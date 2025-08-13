@@ -18,31 +18,30 @@ async function fetchPosts(channel) {
       const textEl = postEl.find('div.tgme_widget_message_text');
       let text = textEl.length ? textEl.html() : '';
       
-      // Удаляем ссылки, сохраняя остальной текст и HTML (для эмодзи и форматирования)
+      // Удаляем ссылки, сохраняя остальной текст и HTML
       if (text) {
         const $text = cheerio.load(text);
-        $text('a').replaceWith(''); // Удаляем теги <a>
+        $text('a').replaceWith('');
         text = $text.html().trim();
       } else {
         text = '';
       }
 
-      const photoEl = postEl.find('a.tgme_widget_message_photo_wrap');
-      const videoEl = postEl.find('video source, video');
-      let media = null;
-
-      if (photoEl.length) {
-        const style = photoEl.attr('style') || '';
+      // Собираем все медиа (фото/видео)
+      const media = [];
+      postEl.find('a.tgme_widget_message_photo_wrap').each((j, mediaEl) => {
+        const style = $(mediaEl).attr('style') || '';
         const match = /url\('([^']+)'\)/.exec(style);
         if (match) {
-          media = { type: 'photo', url: match[1] };
+          media.push({ type: 'photo', url: match[1] });
         }
-      } else if (videoEl.length) {
-        const videoSrc = videoEl.attr('src') || videoEl.find('source').attr('src') || '';
+      });
+      postEl.find('video source, video').each((j, mediaEl) => {
+        const videoSrc = $(mediaEl).attr('src') || $(mediaEl).find('source').attr('src') || '';
         if (videoSrc) {
-          media = { type: 'video', url: videoSrc };
+          media.push({ type: 'video', url: videoSrc });
         }
-      }
+      });
 
       if (url && !text.toLowerCase().includes('#реклама') && !text.toLowerCase().includes('розыгрыш')) {
         posts.push({ url, timestamp, text, media });
@@ -63,12 +62,21 @@ async function main() {
     allPosts = allPosts.concat(posts);
   }
 
+  // Удаление дубликатов по URL
   const uniquePosts = Array.from(new Set(allPosts.map(p => p.url)))
     .map(url => allPosts.find(p => p.url === url));
 
-  uniquePosts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  // Сортировка по московскому времени (UTC+3)
+  uniquePosts.sort((a, b) => {
+    const timeA = new Date(a.timestamp);
+    timeA.setHours(timeA.getHours() + 3); // Moscow time
+    const timeB = new Date(b.timestamp);
+    timeB.setHours(timeB.getHours() + 3);
+    return timeB - timeA; // Новые сверху
+  });
 
-  const topPosts = uniquePosts.slice(0, 50);
+  // Ограничение до 100 постов для прокрутки
+  const topPosts = uniquePosts.slice(0, 100);
 
   fs.writeFileSync('news.json', JSON.stringify(topPosts, null, 2));
 }

@@ -17,37 +17,58 @@
     <div class="news-feed" id="feed"></div>
   </main>
   <script>
+    let posts = [];
+    let currentIndex = 0;
+    const batchSize = 20;
+
     fetch('news.json')
       .then(response => {
         if (!response.ok) throw new Error(`Не удалось загрузить news.json: ${response.status}`);
         return response.json();
       })
-      .then(posts => {
-        console.log('Полученные посты:', posts); // Для отладки
-        const feed = document.getElementById('feed');
-        if (posts.length === 0) {
-          feed.innerHTML = '<p class="error">Нет доступных новостей</p>';
-          return;
-        }
-        posts.forEach(post => {
-          const div = document.createElement('div');
-          div.className = 'post';
-          let content = post.text ? `<p>${post.text}</p>` : '<p>Без текста</p>';
-          if (post.media) {
-            if (post.media.type === 'photo') {
-              content += `<img src="${post.media.url}" alt="Изображение поста" onerror="this.alt='Ошибка загрузки изображения'">`;
-            } else if (post.media.type === 'video') {
-              content += `<video controls><source src="${post.media.url}" type="video/mp4" onerror="this.parentElement.innerHTML='Ошибка загрузки видео'"></video>`;
-            }
+      .then(data => {
+        posts = data;
+        loadMorePosts();
+        document.getElementById('feed').addEventListener('scroll', () => {
+          const feed = document.getElementById('feed');
+          if (feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 50) {
+            loadMorePosts();
           }
-          div.innerHTML = content;
-          feed.appendChild(div);
         });
       })
       .catch(err => {
         console.error('Ошибка загрузки новостей:', err);
         document.getElementById('feed').innerHTML = '<p class="error">Ошибка загрузки новостей. Проверьте консоль браузера.</p>';
       });
+
+    function loadMorePosts() {
+      const feed = document.getElementById('feed');
+      const endIndex = Math.min(currentIndex + batchSize, posts.length);
+      for (let i = currentIndex; i < endIndex; i++) {
+        const post = posts[i];
+        const div = document.createElement('div');
+        div.className = 'post';
+        let content = post.text ? `<p>${post.text}</p>` : '<p>Без текста</p>';
+        if (post.media && post.media.length > 0) {
+          content += '<div class="media-group">';
+          post.media.forEach(mediaItem => {
+            if (mediaItem.type === 'photo') {
+              content += `<img src="${mediaItem.url}" alt="Изображение поста" class="media-item" onclick="toggleFullSize(this)">`;
+            } else if (mediaItem.type === 'video') {
+              content += `<video controls class="media-item" onclick="toggleFullSize(this)"><source src="${mediaItem.url}" type="video/mp4"></video>`;
+            }
+          });
+          content += '</div>';
+        }
+        div.innerHTML = content;
+        feed.appendChild(div);
+      }
+      currentIndex = endIndex;
+    }
+
+    function toggleFullSize(element) {
+      element.classList.toggle('full-size');
+    }
   </script>
 </body>
 </html>
