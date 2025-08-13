@@ -56,6 +56,9 @@ async function fetchPosts(channel) {
 }
 
 async function main() {
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() - 15); // Полмесяца назад
+
   const allPostsPromises = channels.map(channel => fetchPosts(channel));
   const allPostsArrays = await Promise.all(allPostsPromises);
   let allPosts = allPostsArrays.flat();
@@ -70,7 +73,7 @@ async function main() {
     return timeB - timeA; // Новые сверху
   });
 
-  const topPosts = uniquePosts.slice(0, 200); // Для месяца
+  const topPosts = uniquePosts.filter(p => new Date(p.timestamp) >= minDate).slice(0, 500); // Для полной ленты
 
   fs.writeFileSync('news.json', JSON.stringify(topPosts, null, 2));
 }
