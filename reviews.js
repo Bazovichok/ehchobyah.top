@@ -98,13 +98,13 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
     if (file) {
         // Проверка размера и типа файла
         if (file.size > 1024 * 1024) {
-            alert('Image file too large: maximum 5MB.');
+            alert('Image file too large: maximum 1MB.');
             return;
         }
 
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', audio/mp3];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (!allowedTypes.includes(file.type)) {
-            alert('Invalid file type. Only JPG, PNG, mp3, and GIF are allowed.');
+            alert('Invalid file type. Only JPG, PNG, and GIF are allowed.');
             return;
         }
     }
