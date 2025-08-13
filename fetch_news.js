@@ -41,7 +41,6 @@ async function fetchPosts(channel) {
         }
       });
 
-      // Dedup медиа по URL
       const uniqueMedia = [...new Set(media.map(m => m.url))].map(url => media.find(m => m.url === url));
 
       if (url && !text.toLowerCase().includes('#реклама') && !text.toLowerCase().includes('розыгрыш')) {
@@ -57,24 +56,21 @@ async function fetchPosts(channel) {
 }
 
 async function main() {
-  let allPosts = [];
-  for (const channel of channels) {
-    const posts = await fetchPosts(channel);
-    allPosts = allPosts.concat(posts);
-  }
+  const allPostsPromises = channels.map(channel => fetchPosts(channel));
+  const allPostsArrays = await Promise.all(allPostsPromises);
+  let allPosts = allPostsArrays.flat();
 
-  const uniquePosts = Array.from(new Set(allPosts.map(p => p.url)))
-    .map(url => allPosts.find(p => p.url === url));
+  const uniquePosts = [...new Set(allPosts.map(p => p.url))].map(url => allPosts.find(p => p.url === url));
 
   uniquePosts.sort((a, b) => {
     const timeA = new Date(a.timestamp);
-    timeA.setHours(timeA.getHours() + 3);
+    timeA.setHours(timeA.getHours() + 3); // Moscow time
     const timeB = new Date(b.timestamp);
     timeB.setHours(timeB.getHours() + 3);
-    return timeB - timeA;
+    return timeB - timeA; // Новые сверху
   });
 
-  const topPosts = uniquePosts.slice(0, 200); // Увеличен лимит
+  const topPosts = uniquePosts.slice(0, 200); // Для месяца
 
   fs.writeFileSync('news.json', JSON.stringify(topPosts, null, 2));
 }
