@@ -1,5 +1,3 @@
-/* Updated reviews-style.css (added styles for file input and images) */
-
 #reviews-container {
     max-width: 600px;
     margin: 20px auto;
@@ -14,15 +12,16 @@
 
 .review-item p {
     margin: 5px 0;
-    word-wrap: break-word; /* перенос слов на др строку */
+    word-wrap: break-word;
     margin-bottom: 10px;
     padding: 10px;
     background-color: #ede8e8;
     border-radius: 5px;
 }
 
-.review-item p {
-    margin: 5px 0;
+.nickname, .review-date {
+    font-weight: bold;
+    color: #333;
 }
 
 #review-form input, #review-form textarea {
@@ -51,24 +50,18 @@
     background-color: #4caf50;
 }
 
-body {   
-    background-color: #000; /* Черный фон */
+body {
+    background-color: #000;
+    background-image: url('otzivi.jpg');
+    background-size: 600px;
+    background-position: center;
+    animation: dvdAnimation 300s linear infinite;
 }
 
-/* анимация фона картинки */
-          
 @keyframes dvdAnimation {
     0% { background-position: 0 0; }
     50% { background-position: 100% 100%; }
     100% { background-position: 0 0; }
-}
-
-body {
-    background-image: url('otzivi.jpg'); /* фоновое изображение */
-    background-size: 600px;
-    background-position: center;
-    
-    animation: dvdAnimation 300s linear infinite; /* Замедлено на 50% (было 150s) */
 }
 
 .music-button {
@@ -83,9 +76,39 @@ body {
     color: #58e067;
 }
 
-/* New: Styles for audio */
+.review-item img {
+    max-width: 200px;
+    max-height: 200px;
+    filter: blur(10px);
+    cursor: pointer;
+    display: block;
+    margin-top: 10px;
+}
+
 .review-item audio {
     max-width: 100%;
     margin-top: 10px;
     display: block;
+}
+
+.highlight {
+    background-color: yellow;
+    transition: background-color 1s ease;
+}
+
+#pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+}
+
+#pagination button {
+    padding: 5px 10px;
+    font-size: 16px;
+}
+
+#pagination span {
+    margin: 0 10px;
+    font-weight: bold;
 }
