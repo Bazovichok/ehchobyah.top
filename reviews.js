@@ -1,204 +1,184 @@
+// Updated reviews.js (with Cloudinary instead of Imgur or Firebase)
+
 document.getElementById('toggle_music').addEventListener('click', function() {
-    const music = document.getElementById('background_music');
+    var music = document.getElementById('background_music');
     if (music.paused) {
         music.play();
-        this.textContent = '♫';
+        this.textContent = '♫'; // Иконка включенной музыки
     } else {
         music.pause();
-        this.textContent = '🔇';
+        this.textContent = '🔇'; // Иконка выключенной музыки
     }
 });
 
-const reviewsPerPage = 40;
-let currentPage = 1;
-let reviewsCache = [];
-
-function displayReview(review, index) {
+function displayReview(review) {
     const reviewItem = document.createElement('div');
     reviewItem.classList.add('review-item');
-    reviewItem.id = `review-${index}`;
 
+    // Create elements and use textContent to prevent XSS
     const headerP = document.createElement('p');
-    headerP.classList.add('review-header');
-
     const strong = document.createElement('strong');
-    strong.textContent = review.nickname || 'Anonymous';
+    strong.textContent = review.nickname || 'Anonymous'; // Fallback if nickname is empty
     headerP.appendChild(strong);
+    headerP.appendChild(document.createTextNode(' - '));
 
-    const dateSpan = document.createElement('span');
-    dateSpan.classList.add('review-date');
-
+    // Handle date display in Moscow time zone
     let displayDate;
     if (review.date && review.date.toDate) {
+        // If date is a Firestore Timestamp
         displayDate = review.date.toDate().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+    } else if (review.date) {
+        // Fallback for existing string dates
+        displayDate = review.date;
     } else {
-        displayDate = review.date || 'Date not available';
+        displayDate = 'Date not available';
     }
-    dateSpan.textContent = ` - ${displayDate}`;
-    headerP.appendChild(dateSpan);
-
-    headerP.addEventListener('click', () => {
-        const target = document.querySelector(`#review-${index}`);
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            target.classList.add('highlighted');
-            setTimeout(() => target.classList.remove('highlighted'), 1500);
-        }
-    });
+    headerP.appendChild(document.createTextNode(displayDate));
 
     const textP = document.createElement('p');
-    textP.textContent = review.reviewText || '';
+    textP.textContent = review.reviewText || ''; // Prevent empty reviews
 
     reviewItem.appendChild(headerP);
     reviewItem.appendChild(textP);
 
-    let mediaList = [];
-    if (Array.isArray(review.mediaUrls)) {
-        mediaList = review.mediaUrls;
-    } else if (review.mediaUrl) {
-        mediaList = [review.mediaUrl];
-    }
-
-    mediaList.forEach(url => {
-        if (!url) return;
-        if (url.endsWith('.mp3')) {
+    // Handle media if present (image or audio)
+    if (review.mediaUrl) {
+        if (review.mediaUrl.endsWith('.mp3')) {
+            // Display audio
             const audio = document.createElement('audio');
-            audio.src = url;
+            audio.src = review.mediaUrl;
             audio.controls = true;
             reviewItem.appendChild(audio);
         } else {
+            // Display image (original logic)
             const img = document.createElement('img');
-            img.src = url;
+            img.src = review.mediaUrl;
             img.style.maxWidth = '200px';
             img.style.maxHeight = '200px';
             img.style.filter = 'blur(10px)';
             img.style.cursor = 'pointer';
             img.style.display = 'block';
             img.style.marginTop = '10px';
+
             let isBlurred = true;
+            let isEnlarged = false;
+
             img.onclick = function() {
                 if (isBlurred) {
                     this.style.filter = 'none';
                     isBlurred = false;
+                }
+
+                if (isEnlarged) {
+                    this.style.maxWidth = '200px';
+                    this.style.maxHeight = '200px';
+                    isEnlarged = false;
                 } else {
-                    this.style.filter = 'blur(10px)';
-                    isBlurred = true;
+                    this.style.maxWidth = '100%';
+                    this.style.maxHeight = 'none';
+                    isEnlarged = true;
                 }
             };
+
             reviewItem.appendChild(img);
         }
-    });
-
-    return reviewItem;
-}
-
-function renderPage() {
-    const reviewsList = document.getElementById('reviews-list');
-    reviewsList.innerHTML = '';
-
-    const startIndex = (currentPage - 1) * reviewsPerPage;
-    const endIndex = startIndex + reviewsPerPage;
-    const pageReviews = reviewsCache.slice(startIndex, endIndex); // уже в порядке от старых к новым
-
-    pageReviews.forEach((review, idx) => {
-        reviewsList.appendChild(displayReview(review, startIndex + idx));
-    });
-
-    document.getElementById('page-number').textContent = currentPage;
-}
-
-document.getElementById('prev-page').addEventListener('click', () => {
-    if (currentPage > 1) {
-        currentPage--;
-        renderPage();
     }
-});
-document.getElementById('next-page').addEventListener('click', () => {
-    if (currentPage < Math.ceil(reviewsCache.length / reviewsPerPage)) {
-        currentPage++;
-        renderPage();
-    }
-});
+
+    document.getElementById('reviews-list').appendChild(reviewItem);
+}
 
 document.getElementById('review-form').addEventListener('submit', function(e) {
     e.preventDefault();
-
-    const nickname = document.getElementById('nickname').value.trim();
+    const nickname = document.getElementById('nickname').value.trim(); // Trim whitespace
     const reviewText = document.getElementById('review-text').value.trim();
-    const files = Array.from(document.getElementById('review-media').files);
+    const file = document.getElementById('review-media').files[0]; // Изменено на review-media
 
+    // Basic client-side validation
     if (!nickname || !reviewText) {
-        alert('Введите имя и комментарий.');
-        return;
-    }
-    if (nickname.length > 30) {
-        alert('Максимум 30 символов для имени.');
-        return;
-    }
-    if (reviewText.length > 250) {
-        alert('Максимум 250 символов для комментария.');
-        return;
-    }
-    if (files.length > 2) {
-        alert('Можно прикрепить максимум 2 файла.');
+        alert('Please enter a nickname and review text.');
         return;
     }
 
-    for (const file of files) {
-        if (file.size > 5 * 1024 * 1024) {
-            alert('Максимальный размер файла — 5MB.');
+    if (nickname.length > 30) {
+        alert('Nickname too long: maximum 30 characters.');
+        return;
+    }
+
+    if (file) {
+        // Проверка размера и типа файла
+        if (file.size > 5 * 1024 * 1024) { // Увеличено до 5 МБ
+            alert('File too large: maximum 5MB.');
             return;
         }
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'audio/mpeg'];
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'audio/mpeg']; // Добавлен MP3
         if (!allowedTypes.includes(file.type)) {
-            alert('Можно загружать только JPG, PNG, GIF и MP3.');
+            alert('Invalid file type. Only JPG, PNG, GIF, and MP3 are allowed.');
             return;
         }
     }
 
     const reviewItem = {
-        nickname,
-        reviewText,
-        date: firebase.firestore.FieldValue.serverTimestamp()
+        nickname: nickname,
+        reviewText: reviewText,
+        date: firebase.firestore.FieldValue.serverTimestamp() // Use server timestamp for consistency
     };
 
+    // Function to add to Firestore
     const addReview = (item) => {
         firebase.firestore().collection('reviews').add(item)
             .then(() => {
                 document.getElementById('review-form').reset();
                 document.getElementById('send_sound').play();
             })
-            .catch(err => console.error('Ошибка сохранения:', err));
+            .catch((error) => {
+                console.error('Ошибка при сохранении отзыва:', error);
+            });
     };
 
-    if (files.length > 0) {
-        Promise.all(files.map(file => {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', 'reviews_unsigned');
-            return fetch('https://api.cloudinary.com/v1_1/dp0smiea6/auto/upload', {
-                method: 'POST',
-                body: formData
-            }).then(res => res.json());
-        }))
-        .then(results => {
-            reviewItem.mediaUrls = results.map(r => r.secure_url);
-            addReview(reviewItem);
+    if (file) {
+        // Загрузка в Cloudinary
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'reviews_unsigned'); // Вставьте имя вашего unsigned preset, например 'reviews_unsigned'
+
+        fetch('https://api.cloudinary.com/v1_1/dp0smiea6/auto/upload', {  // Изменено на /auto/upload для поддержки аудио
+            method: 'POST',
+            body: formData
         })
-        .catch(err => {
-            console.error('Ошибка загрузки файлов:', err);
-            alert('Не удалось загрузить файлы.');
+        .then(response => response.json())
+        .then(data => {
+            if (data.secure_url) {
+                reviewItem.mediaUrl = data.secure_url; // Изменено на mediaUrl
+                addReview(reviewItem);
+            } else {
+                alert('Ошибка загрузки файла в Cloudinary: ' + (data.error ? data.error.message : 'Неизвестная ошибка'));
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка при загрузке файла:', error);
+            alert('Не удалось загрузить файл.');
         });
     } else {
         addReview(reviewItem);
     }
 });
 
-window.addEventListener('load', () => {
+// Load and display reviews on page load, sorted by date
+window.addEventListener('load', function() {
+    // Clear the list initially to prevent duplicates on reload
+    const reviewsList = document.getElementById('reviews-list');
+    reviewsList.innerHTML = ''; // Clear existing content
+
+    // Query with orderBy for chronological sorting
     firebase.firestore().collection('reviews')
-        .orderBy('date', 'asc') // всегда от старых к новым
-        .onSnapshot(snapshot => {
-            reviewsCache = snapshot.docs.map(doc => doc.data());
-            renderPage();
+        .orderBy('date', 'asc') // 'asc' for oldest first; change to 'desc' if newest first
+        .onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added') {
+                    displayReview(change.doc.data());
+                }
+                // Optionally handle 'modified' or 'removed' if needed in the future
+            });
         });
 });

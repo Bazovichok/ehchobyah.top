@@ -1,3 +1,5 @@
+/* Updated reviews-style.css (added styles for file input and images) */
+
 #reviews-container {
     max-width: 600px;
     margin: 20px auto;
@@ -12,24 +14,15 @@
 
 .review-item p {
     margin: 5px 0;
-    word-wrap: break-word;
+    word-wrap: break-word; /* перенос слов на др строку */
     margin-bottom: 10px;
     padding: 10px;
     background-color: #ede8e8;
     border-radius: 5px;
 }
 
-.review-header {
-    display: flex;
-    gap: 5px;
-    background-color: #d8d5d5;
-    padding: 5px 8px;
-    border-radius: 5px;
-}
-.review-header strong,
-.review-header .review-date {
-    font-weight: 700;
-    color: #222;
+.review-item p {
+    margin: 5px 0;
 }
 
 #review-form input, #review-form textarea {
@@ -59,23 +52,30 @@
 }
 
 body {   
-    background-color: #000;
-    background-image: url('otzivi.jpg');
-    background-size: 600px;
-    background-position: center;
-    animation: dvdAnimation 300s linear infinite;
+    background-color: #000; /* Черный фон */
 }
 
+/* анимация фона картинки */
+          
 @keyframes dvdAnimation {
     0% { background-position: 0 0; }
     50% { background-position: 100% 100%; }
     100% { background-position: 0 0; }
 }
 
+body {
+    background-image: url('otzivi.jpg'); /* фоновое изображение */
+    background-size: 600px;
+    background-position: center;
+    
+    animation: dvdAnimation 300s linear infinite; /* Замедлено на 50% (было 150s) */
+}
+
 .music-button {
     position: absolute;
     top: 10px;
     right: 10px;
+    padding: 5px;
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -83,24 +83,9 @@ body {
     color: #58e067;
 }
 
+/* New: Styles for audio */
 .review-item audio {
     max-width: 100%;
     margin-top: 10px;
     display: block;
-}
-
-#pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-#pagination button {
-    padding: 5px 10px;
-}
-
-.highlighted {
-    background-color: yellow !important;
-    transition: background-color 1s ease;
 }

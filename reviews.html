@@ -1,3 +1,5 @@
+<!-- Updated reviews.html -->
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -11,17 +13,10 @@
     <div id="reviews-container">
         <h1>Книга жалоб и предложений</h1>
         <div id="reviews-list"></div>
-
-        <div id="pagination">
-            <button id="prev-page">←</button>
-            <span id="page-number">1</span>
-            <button id="next-page">→</button>
-        </div>
-
         <form id="review-form">
             <input type="text" id="nickname" placeholder="Ваше ИМЯ" required maxlength="30">
-            <textarea id="review-text" placeholder="Ваш комментарий" required maxlength="250"></textarea>
-            <input type="file" id="review-media" accept="image/jpeg,image/png,image/gif,audio/mpeg" multiple>
+            <textarea id="review-text" placeholder="Ваш комментарий" required></textarea>
+            <input type="file" id="review-media" accept="image/jpeg,image/png,image/gif,audio/mpeg"> <!-- Ограничение форматов -->
             <button type="submit">Оставить мнение</button>
             <a href="index.html">Вернуться на главную</a>
         </form>
@@ -36,8 +31,9 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
+                                      <!-- Added for storage -->
     <script>
+        // Firebase config 
         const firebaseConfig = {
             apiKey: "AIzaSyBWTq4kFtsD0dFUc5ZlrCAcXUmi9p-JiTE",
             authDomain: "ehchobyahzavoz.firebaseapp.com",
