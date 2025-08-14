@@ -10,7 +10,6 @@
     <button id="toggle_music" class="music-button">♫</button>
     <div id="reviews-container">
         <h1>Книга жалоб и предложений</h1>
-        
         <div id="reviews-list"></div>
 
         <div id="pagination">
@@ -22,10 +21,7 @@
         <form id="review-form">
             <input type="text" id="nickname" placeholder="Ваше ИМЯ" required maxlength="30">
             <textarea id="review-text" placeholder="Ваш комментарий" required maxlength="250"></textarea>
-
-            <input type="file" id="review-media-1" accept="image/jpeg,image/png,image/gif,audio/mpeg">
-            <input type="file" id="review-media-2" accept="image/jpeg,image/png,image/gif,audio/mpeg">
-
+            <input type="file" id="review-media" accept="image/jpeg,image/png,image/gif,audio/mpeg" multiple>
             <button type="submit">Оставить мнение</button>
             <a href="index.html">Вернуться на главную</a>
         </form>

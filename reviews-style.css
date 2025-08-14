@@ -19,7 +19,12 @@
     border-radius: 5px;
 }
 
-.nickname, .review-date {
+.review-header {
+    display: flex;
+    gap: 5px;
+}
+.review-header strong,
+.review-header .review-date {
     font-weight: bold;
     color: #333;
 }
@@ -50,7 +55,7 @@
     background-color: #4caf50;
 }
 
-body {
+body {   
     background-color: #000;
     background-image: url('otzivi.jpg');
     background-size: 600px;
@@ -68,21 +73,11 @@ body {
     position: absolute;
     top: 10px;
     right: 10px;
-    padding: 5px;
     background-color: transparent;
     border: none;
     cursor: pointer;
     font-size: 24px;
     color: #58e067;
-}
-
-.review-item img {
-    max-width: 200px;
-    max-height: 200px;
-    filter: blur(10px);
-    cursor: pointer;
-    display: block;
-    margin-top: 10px;
 }
 
 .review-item audio {
@@ -91,24 +86,17 @@ body {
     display: block;
 }
 
-.highlight {
-    background-color: yellow;
-    transition: background-color 1s ease;
-}
-
 #pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 15px 0;
+    gap: 10px;
+    margin-bottom: 15px;
 }
-
 #pagination button {
     padding: 5px 10px;
-    font-size: 16px;
 }
-
-#pagination span {
-    margin: 0 10px;
-    font-weight: bold;
+.highlighted {
+    background-color: yellow;
+    transition: background-color 1s ease;
 }
