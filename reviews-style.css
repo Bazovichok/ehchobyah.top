@@ -22,11 +22,14 @@
 .review-header {
     display: flex;
     gap: 5px;
+    background-color: #d8d5d5;
+    padding: 5px 8px;
+    border-radius: 5px;
 }
 .review-header strong,
 .review-header .review-date {
-    font-weight: bold;
-    color: #333;
+    font-weight: 700;
+    color: #222;
 }
 
 #review-form input, #review-form textarea {
@@ -96,7 +99,8 @@ body {
 #pagination button {
     padding: 5px 10px;
 }
+
 .highlighted {
-    background-color: yellow;
+    background-color: yellow !important;
     transition: background-color 1s ease;
 }

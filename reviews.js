@@ -1,5 +1,5 @@
 document.getElementById('toggle_music').addEventListener('click', function() {
-    var music = document.getElementById('background_music');
+    const music = document.getElementById('background_music');
     if (music.paused) {
         music.play();
         this.textContent = '♫';
@@ -13,9 +13,10 @@ const reviewsPerPage = 40;
 let currentPage = 1;
 let reviewsCache = [];
 
-function displayReview(review) {
+function displayReview(review, index) {
     const reviewItem = document.createElement('div');
     reviewItem.classList.add('review-item');
+    reviewItem.id = `review-${index}`;
 
     const headerP = document.createElement('p');
     headerP.classList.add('review-header');
@@ -37,8 +38,12 @@ function displayReview(review) {
     headerP.appendChild(dateSpan);
 
     headerP.addEventListener('click', () => {
-        navigator.clipboard.writeText(`@${displayDate}`);
-        alert('Тег скопирован!');
+        const target = document.querySelector(`#review-${index}`);
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.classList.add('highlighted');
+            setTimeout(() => target.classList.remove('highlighted'), 1500);
+        }
     });
 
     const textP = document.createElement('p');
@@ -48,13 +53,14 @@ function displayReview(review) {
     reviewItem.appendChild(textP);
 
     let mediaList = [];
-    if (review.mediaUrls) {
+    if (Array.isArray(review.mediaUrls)) {
         mediaList = review.mediaUrls;
     } else if (review.mediaUrl) {
         mediaList = [review.mediaUrl];
     }
 
     mediaList.forEach(url => {
+        if (!url) return;
         if (url.endsWith('.mp3')) {
             const audio = document.createElement('audio');
             audio.src = url;
@@ -69,7 +75,6 @@ function displayReview(review) {
             img.style.cursor = 'pointer';
             img.style.display = 'block';
             img.style.marginTop = '10px';
-
             let isBlurred = true;
             img.onclick = function() {
                 if (isBlurred) {
@@ -93,10 +98,10 @@ function renderPage() {
 
     const startIndex = (currentPage - 1) * reviewsPerPage;
     const endIndex = startIndex + reviewsPerPage;
-    const pageReviews = reviewsCache.slice(startIndex, endIndex);
+    const pageReviews = reviewsCache.slice(startIndex, endIndex); // уже в порядке от старых к новым
 
-    pageReviews.reverse().forEach(review => {
-        reviewsList.appendChild(displayReview(review));
+    pageReviews.forEach((review, idx) => {
+        reviewsList.appendChild(displayReview(review, startIndex + idx));
     });
 
     document.getElementById('page-number').textContent = currentPage;
@@ -191,7 +196,7 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
 
 window.addEventListener('load', () => {
     firebase.firestore().collection('reviews')
-        .orderBy('date', 'asc')
+        .orderBy('date', 'asc') // всегда от старых к новым
         .onSnapshot(snapshot => {
             reviewsCache = snapshot.docs.map(doc => doc.data());
             renderPage();
