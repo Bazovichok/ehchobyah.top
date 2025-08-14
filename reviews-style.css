@@ -68,7 +68,7 @@ body {
     background-size: 600px;
     background-position: center;
     
-    animation: dvdAnimation 150s linear infinite;
+    animation: dvdAnimation 300s linear infinite; /* Замедлено на 50% (было 150s) */
 }
 
 .music-button {
@@ -81,4 +81,11 @@ body {
     cursor: pointer;
     font-size: 24px;
     color: #58e067;
+}
+
+/* New: Styles for audio */
+.review-item audio {
+    max-width: 100%;
+    margin-top: 10px;
+    display: block;
 }

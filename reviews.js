@@ -41,38 +41,47 @@ function displayReview(review) {
     reviewItem.appendChild(headerP);
     reviewItem.appendChild(textP);
 
-    // Handle image if present
-    if (review.imageUrl) {
-        const img = document.createElement('img');
-        img.src = review.imageUrl;
-        img.style.maxWidth = '200px';
-        img.style.maxHeight = '200px';
-        img.style.filter = 'blur(10px)';
-        img.style.cursor = 'pointer';
-        img.style.display = 'block';
-        img.style.marginTop = '10px';
+    // Handle media if present (image or audio)
+    if (review.mediaUrl) {
+        if (review.mediaUrl.endsWith('.mp3')) {
+            // Display audio
+            const audio = document.createElement('audio');
+            audio.src = review.mediaUrl;
+            audio.controls = true;
+            reviewItem.appendChild(audio);
+        } else {
+            // Display image (original logic)
+            const img = document.createElement('img');
+            img.src = review.mediaUrl;
+            img.style.maxWidth = '200px';
+            img.style.maxHeight = '200px';
+            img.style.filter = 'blur(10px)';
+            img.style.cursor = 'pointer';
+            img.style.display = 'block';
+            img.style.marginTop = '10px';
 
-        let isBlurred = true;
-        let isEnlarged = false;
+            let isBlurred = true;
+            let isEnlarged = false;
 
-        img.onclick = function() {
-            if (isBlurred) {
-                this.style.filter = 'none';
-                isBlurred = false;
-            }
+            img.onclick = function() {
+                if (isBlurred) {
+                    this.style.filter = 'none';
+                    isBlurred = false;
+                }
 
-            if (isEnlarged) {
-                this.style.maxWidth = '200px';
-                this.style.maxHeight = '200px';
-                isEnlarged = false;
-            } else {
-                this.style.maxWidth = '100%';
-                this.style.maxHeight = 'none';
-                isEnlarged = true;
-            }
-        };
+                if (isEnlarged) {
+                    this.style.maxWidth = '200px';
+                    this.style.maxHeight = '200px';
+                    isEnlarged = false;
+                } else {
+                    this.style.maxWidth = '100%';
+                    this.style.maxHeight = 'none';
+                    isEnlarged = true;
+                }
+            };
 
-        reviewItem.appendChild(img);
+            reviewItem.appendChild(img);
+        }
     }
 
     document.getElementById('reviews-list').appendChild(reviewItem);
@@ -82,7 +91,7 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const nickname = document.getElementById('nickname').value.trim(); // Trim whitespace
     const reviewText = document.getElementById('review-text').value.trim();
-    const file = document.getElementById('review-image').files[0];
+    const file = document.getElementById('review-media').files[0]; // Изменено на review-media
 
     // Basic client-side validation
     if (!nickname || !reviewText) {
@@ -97,14 +106,14 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
 
     if (file) {
         // Проверка размера и типа файла
-        if (file.size > 1024 * 1024) {
-            alert('Image file too large: maximum 1MB.');
+        if (file.size > 5 * 1024 * 1024) { // Увеличено до 5 МБ
+            alert('File too large: maximum 5MB.');
             return;
         }
 
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'audio/mpeg']; // Добавлен MP3
         if (!allowedTypes.includes(file.type)) {
-            alert('Invalid file type. Only JPG, PNG, and GIF are allowed.');
+            alert('Invalid file type. Only JPG, PNG, GIF, and MP3 are allowed.');
             return;
         }
     }
@@ -133,22 +142,22 @@ document.getElementById('review-form').addEventListener('submit', function(e) {
         formData.append('file', file);
         formData.append('upload_preset', 'reviews_unsigned'); // Вставьте имя вашего unsigned preset, например 'reviews_unsigned'
 
-        fetch('https://api.cloudinary.com/v1_1/dp0smiea6/image/upload', {  // Вставьте ваш Cloud Name вместо YOUR_CLOUD_NAME
+        fetch('https://api.cloudinary.com/v1_1/dp0smiea6/auto/upload', {  // Изменено на /auto/upload для поддержки аудио
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(data => {
             if (data.secure_url) {
-                reviewItem.imageUrl = data.secure_url;
+                reviewItem.mediaUrl = data.secure_url; // Изменено на mediaUrl
                 addReview(reviewItem);
             } else {
-                alert('Ошибка загрузки изображения в Cloudinary: ' + (data.error ? data.error.message : 'Неизвестная ошибка'));
+                alert('Ошибка загрузки файла в Cloudinary: ' + (data.error ? data.error.message : 'Неизвестная ошибка'));
             }
         })
         .catch(error => {
-            console.error('Ошибка при загрузке изображения:', error);
-            alert('Не удалось загрузить изображение.');
+            console.error('Ошибка при загрузке файла:', error);
+            alert('Не удалось загрузить файл.');
         });
     } else {
         addReview(reviewItem);
