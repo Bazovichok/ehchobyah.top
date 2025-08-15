@@ -68,7 +68,7 @@ body {
     background-size: 600px;
     background-position: center;
     
-    animation: dvdAnimation 300s linear infinite; /* Замедлено на 50% (было 150s) */
+    animation: dvdAnimation 400s linear infinite; /* Замедлено на 50% (было 150s) */
 }
 
 .music-button {
