@@ -13,21 +13,10 @@
     <div id="reviews-container">
         <h1>Книга жалоб и предложений</h1>
         <div id="reviews-list"></div>
-        
-   <div id="pagination">
-    <button id="prev-page">←</button>
-    <span id="page-number"></span>
-    <button id="next-page">→</button>
-</div>     
-
-
-
-         <form id="review-form">
-            <input type="text" id="nickname" placeholder="Ваше ИМЯ" required maxlength="30">            
+        <form id="review-form">
+            <input type="text" id="nickname" placeholder="Ваше ИМЯ" required maxlength="30">
             <textarea id="review-text" placeholder="Ваш комментарий" required></textarea>
-             <textarea id="review-text" maxlength="250"></textarea>
-            <input type="file" id="review-media1" accept="image/jpeg,image/png,image/gif,audio/mpeg"> <!-- Первый файл -->
-            <input type="file" id="review-media2" accept="image/jpeg,image/png,image/gif,audio/mpeg"> <!-- Второй файл -->            
+            <input type="file" id="review-media" accept="image/jpeg,image/png,image/gif,audio/mpeg"> <!-- Ограничение форматов -->
             <button type="submit">Оставить мнение</button>
             <a href="index.html">Вернуться на главную</a>
         </form>
