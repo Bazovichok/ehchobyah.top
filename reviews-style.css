@@ -1,91 +1,99 @@
-/* Updated reviews-style.css (added styles for file input and images) */
-
-#reviews-container {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 15px;
+body {
+  background-color: #000;             /* Чёрный фон */
+  color: #0f0;                        /* Зелёный текст на чёрном фоне */
+  font-family: Arial, sans-serif;
+  background-image: url('otzivi.jpg'); /* Пример фонового изображения с DVD-эффектом */
+  background-size: cover;
 }
 
-#reviews-list {
-    margin-bottom: 20px;
+.reviews-container {
+  width: 80%;
+  margin: auto;
+  padding: 20px;
 }
 
-.review-item p {
-    margin: 5px 0;
-    word-wrap: break-word; /* перенос слов на др строку */
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #ede8e8;
-    border-radius: 5px;
-}
-
-.review-item p {
-    margin: 5px 0;
+h1 {
+  color: #0f0;
+  text-align: center;
 }
 
 #review-form input, #review-form textarea {
-    width: 100%;
-    padding: 7px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 15px;
+  width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+  background: #111;
+  border: 1px solid #0f0;
+  color: #0f0;
 }
 
-#review-form input[type="file"] {
-    border: none;
-    padding: 0;
+#review-form .btn {
+  background: #0f0;
+  color: #000;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
-#review-form button {
-    padding: 10px 20px;
-    background-color: #58e067;
-    color: black;
-    border: none;
-    cursor: pointer;
-    border-radius: 20px;
+#comments-container .comment {
+  background: #111;
+  border: 1px solid #0f0;
+  padding: 10px;
+  margin: 10px 0;
+  position: relative;
 }
 
-#review-form button:hover {
-    background-color: #4caf50;
+.comment .username, .comment .timestamp {
+  font-weight: bold;      /* Жирный шрифт для ника и времени */
+  color: #0a0;            /* Темно-зелёный для визуальной выделенности */
 }
 
-body {   
-    background-color: #000; /* Черный фон */
+.comment .timestamp {
+  float: right;
 }
 
-/* анимация фона картинки */
-          
-@keyframes dvdAnimation {
-    0% { background-position: 0 0; }
-    50% { background-position: 100% 100%; }
-    100% { background-position: 0 0; }
+.comment .text {
+  margin: 10px 0;
 }
 
-body {
-    background-image: url('otzivi.jpg'); /* фоновое изображение */
-    background-size: 600px;
-    background-position: center;
-    
-    animation: dvdAnimation 400s linear infinite; /* Замедлено на 50% (было 150s) */
+.comment img {
+  max-width: 100%;
+  height: auto;
+  filter: blur(5px);      /* Размытие изображений по умолчанию:contentReference[oaicite:3]{index=3} */
+  cursor: pointer;
+  transition: filter 0.3s;
 }
 
-.music-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 5px;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 24px;
-    color: #58e067;
+.comment img.unblur {
+  filter: none;
 }
 
-/* New: Styles for audio */
-.review-item audio {
-    max-width: 100%;
-    margin-top: 10px;
-    display: block;
+.comment audio {
+  margin-top: 5px;
+  width: 100%;
+}
+
+#pagination {
+  text-align: center;
+  margin: 20px 0;
+}
+
+#pagination .btn {
+  background: none;
+  border: 1px solid #0f0;
+  color: #0f0;
+  padding: 5px 15px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+/* Подсветка найденного комментария */
+.highlighted {
+  border: 2px dashed #ff0;
+  animation: highlight 3s ease;
+}
+
+@keyframes highlight {
+  from { background: rgba(255,255,0,0.3); }
+  to { background: none; }
 }
