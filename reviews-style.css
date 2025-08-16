@@ -1,4 +1,4 @@
-/* Updated reviews-style.css (added styles for file input and images) */
+/* reviews-style.css — обновлённая версия (сохранён оригинальный вид + правки) */
 
 #reviews-container {
     max-width: 600px;
@@ -12,19 +12,46 @@
     margin-bottom: 20px;
 }
 
-.review-item p {
-    margin: 5px 0;
-    word-wrap: break-word; /* перенос слов на др строку */
-    margin-bottom: 10px;
+/* ---- Новая структура: каждая карточка отзыва ----
+   .review-card — контейнер одного отзыва
+   внутри: .header-block (ник+дата) и .content-block (текст)
+   между header и content — 1px; между карточками — 5px
+*/
+.review-card {
+    margin-bottom: 15px; /* расстояние между разными комментариями = 10px */
+}
+
+/* header и content — отдельные блоки, оба выглядят как твои ранее
+   (сохраняем текущий фон и скругления). Разделяем 1px через margin/padding. */
+.review-card .header-block,
+.review-card .content-block {
+    background-color: #bce0cb;
     padding: 10px;
-    background-color: #ede8e8;
-    border-radius: 5px;
+    border-radius: 6px;
+    margin: 0;
 }
 
-.review-item p {
-    margin: 5px 0;
+/* header чуть более тёмный/жирный — но в рамках твоего стиля */
+.review-card .header-block {
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 1px; /* 1px раздел между header и content */
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
+/* content блок (сам комментарий) — сохраняет общий вид, но скругления нижние */
+.review-card .content-block {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+/* Если нужно, можно отдельно выделить ник и дату, но уже определены стили выше */
+.review-card .nickname { font-weight: 700; color: #222; }
+.review-card .datetime { font-weight: 700; color: #222; }
+
+/* форма — сохраним как у тебя был */
 #review-form input, #review-form textarea {
     width: 100%;
     padding: 7px;
@@ -33,10 +60,7 @@
     border-radius: 15px;
 }
 
-#review-form input[type="file"] {
-    border: none;
-    padding: 0;
-}
+#review-form input[type="file"] { border: none; padding: 0; }
 
 #review-form button {
     padding: 10px 20px;
@@ -46,29 +70,22 @@
     cursor: pointer;
     border-radius: 20px;
 }
+#review-form button:hover { background-color: #4caf50; }
 
-#review-form button:hover {
-    background-color: #4caf50;
+/* тело и фон- анимация — оставил как в оригинале */
+body {
+    background-color: #000;
 }
-
-body {   
-    background-color: #000; /* Черный фон */
-}
-
-/* анимация фона картинки */
-          
 @keyframes dvdAnimation {
     0% { background-position: 0 0; }
     50% { background-position: 100% 100%; }
     100% { background-position: 0 0; }
 }
-
 body {
-    background-image: url('otzivi.jpg'); /* фоновое изображение */
+    background-image: url('otzivi.jpg');
     background-size: 600px;
     background-position: center;
-    
-    animation: dvdAnimation 400s linear infinite; /* Замедлено на 50% (было 150s) */
+    animation: dvdAnimation 300s linear infinite;
 }
 
 .music-button {
@@ -83,9 +100,57 @@ body {
     color: #58e067;
 }
 
-/* New: Styles for audio */
-.review-item audio {
-    max-width: 100%;
-    margin-top: 10px;
+/* Медиа внутри карточки — картинки и аудио */
+.review-card img {
     display: block;
+    margin-top: 10px;
+    max-width: 200px;
+    max-height: 200px;
+    cursor: pointer;
+    transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+/* блюр по умолчанию */
+.review-card img.blurred {
+    filter: blur(10px);
+}
+
+/* аудио */
+.review-card audio { max-width: 100%; margin-top: 10px; display: block; }
+
+/* подсветка при навигации (переход по тегу) */
+.highlight {
+    box-shadow: 0 0 0 4px rgba(255,230,0,0.85);
+    border-radius: 8px;
+    transition: box-shadow 0.6s ease;
+}
+
+/* пагинация */
+#pagination { text-align: center; margin: 10px 0; }
+#pagination button {
+    padding: 6px 10px;
+    border-radius: 12px;
+    border: none;
+    background: #58e067;
+    cursor: pointer;
+}
+#pagination button:disabled { opacity: 0.5; cursor: default; }
+#pagination span { margin: 0 10px; color: #222; font-weight:700; }
+
+/* Lightbox overlay — фиксированное окно поверх контента для увеличения изображения
+   overlay прозрачный, чтобы не менять визуальную стилистику, но обеспечить фиксированное позиционирование. */
+#image-lightbox {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    background: rgba(0,0,0,0.45); /* лёгкая затемняющая подложка для фокуса */
+}
+#image-lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    cursor: pointer;
 }

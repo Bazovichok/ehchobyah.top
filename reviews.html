@@ -1,5 +1,4 @@
-<!-- Updated reviews.html -->
-
+<!-- reviews.html (updated: functionality fixed, original look preserved) -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -12,11 +11,24 @@
     <button id="toggle_music" class="music-button">♫</button>
     <div id="reviews-container">
         <h1>Книга жалоб и предложений</h1>
+
+        <!-- Список отзывов -->
         <div id="reviews-list"></div>
+
+        <!-- Пагинация (книжная) -->
+        <div id="pagination" style="text-align:center; margin-bottom:10px;">
+            <button id="prev-page">←</button>
+            <span id="page-number">1</span>
+            <button id="next-page">→</button>
+        </div>
+
         <form id="review-form">
             <input type="text" id="nickname" placeholder="Ваше ИМЯ" required maxlength="30">
-            <textarea id="review-text" placeholder="Ваш комментарий" required></textarea>
-            <input type="file" id="review-media" accept="image/jpeg,image/png,image/gif,audio/mpeg"> <!-- Ограничение форматов -->
+            <textarea id="review-text" placeholder="Ваш комментарий" required maxlength="250"></textarea>
+
+            <!-- ЕДИНАЯ кнопка, можно выбрать до 2 файлов -->
+            <input type="file" id="review-media" accept="image/jpeg,image/png,image/gif,audio/mpeg" multiple>
+
             <button type="submit">Оставить мнение</button>
             <a href="index.html">Вернуться на главную</a>
         </form>
@@ -29,11 +41,12 @@
         <source src="send_sound.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- Firebase v8 -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-                                      <!-- Added for storage -->
+
     <script>
-        // Firebase config 
+        // Firebase config (оставляем твой конфиг)
         const firebaseConfig = {
             apiKey: "AIzaSyBWTq4kFtsD0dFUc5ZlrCAcXUmi9p-JiTE",
             authDomain: "ehchobyahzavoz.firebaseapp.com",
@@ -44,6 +57,7 @@
         };
         firebase.initializeApp(firebaseConfig);
     </script>
+
     <script src="reviews.js"></script>
 </body>
 </html>
