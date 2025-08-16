@@ -1,31 +1,49 @@
+<!-- Updated reviews.html -->
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Отзывы</title>
-  <link rel="stylesheet" href="reviews-style.css">
-  <!-- Firebase JS SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книга жалоб и предложений</title>
+    <link rel="stylesheet" href="reviews-style.css">
 </head>
 <body>
-  <div class="reviews-container">
-    <h1>Отзывы</h1>
-    <form id="review-form">
-      <input type="text" id="nickname" placeholder="Ваше ИМЯ" required maxlength="50"><br>
-      <textarea id="comment" placeholder="Ваш комментарий..." rows="4" maxlength="250" required></textarea><br>
-      <input type="file" id="media-input" accept="image/png,image/jpeg,image/gif,audio/mpeg" multiple><br>
-      <button type="submit" class="btn">Отправить</button>
-    </form>
-    <div id="comments-container"></div>
-    <div id="pagination">
-      <button id="prev-btn" class="btn">←</button>
-      <span id="page-number">1</span>
-      <button id="next-btn" class="btn">→</button>
+    <button id="toggle_music" class="music-button">♫</button>
+    <div id="reviews-container">
+        <h1>Книга жалоб и предложений</h1>
+        <div id="reviews-list"></div>
+        <form id="review-form">
+            <input type="text" id="nickname" placeholder="Ваше ИМЯ" required maxlength="30">
+            <textarea id="review-text" placeholder="Ваш комментарий" required></textarea>
+            <input type="file" id="review-media" accept="image/jpeg,image/png,image/gif,audio/mpeg"> <!-- Ограничение форматов -->
+            <button type="submit">Оставить мнение</button>
+            <a href="index.html">Вернуться на главную</a>
+        </form>
     </div>
-  </div>
 
-  <!-- JS code -->
-  <script src="reviews.js"></script>
+    <audio id="background_music" loop>
+        <source src="background_music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="send_sound">
+        <source src="send_sound.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+                                      <!-- Added for storage -->
+    <script>
+        // Firebase config 
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWTq4kFtsD0dFUc5ZlrCAcXUmi9p-JiTE",
+            authDomain: "ehchobyahzavoz.firebaseapp.com",
+            projectId: "ehchobyahzavoz",
+            storageBucket: "ehchobyahzavoz.firebasestorage.app",
+            messagingSenderId: "196426611905",
+            appId: "1:196426611905:web:be91e86e1ac8964877a840"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="reviews.js"></script>
 </body>
 </html>
