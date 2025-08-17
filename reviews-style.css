@@ -14,13 +14,13 @@
 
 /* карточка отзыва */
 .review-card {
-    margin-bottom: 5px; /* расстояние между разными комментариями = 5px */
+    margin-bottom: 15px; /* расстояние между разными комментариями = 15px */
 }
 
 /* header и content */
 .review-card .header-block,
 .review-card .content-block {
-    background-color: #ede8e8;
+    background-color: #bce0cb;
     padding: 10px;
     border-radius: 6px;
     margin: 0;
@@ -110,6 +110,30 @@ body {
     cursor: pointer;
     display:block;
 }
+
+.media-container video.blurred {
+    filter: blur(10px);
+    -webkit-filter: blur(10px);
+    transition: filter 0.15s ease;
+}
+
+/* превью видео — не показываем controls (полноразмерный плеер в lightbox будет иметь controls) */
+.media-container video.preview {
+    max-width: 220px;
+    max-height: 160px;
+    display: block;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+/* при наведении курсор явно "игра" */
+.media-container img, .media-container video.preview {
+    cursor: pointer;
+}
+
+
+
+
 
 /* аудио */
 .review-card audio { max-width: 100%; margin-top: 10px; display: block; }
