@@ -1,5 +1,3 @@
-/* reviews-style.css — обновлённая версия (сохранён оригинальный вид + правки) */
-
 #reviews-container {
     max-width: 600px;
     margin: 20px auto;
@@ -33,6 +31,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    justify-content: flex-start;
 }
 
 .review-card .content-block {
@@ -42,6 +41,37 @@
 
 .review-card .nickname { font-weight: 700; color: #222; }
 .review-card .datetime { font-weight: 700; color: #222; }
+
+/* контейнер для индикаторов тегов (точек) — справа от времени */
+.tag-indicators {
+    display: inline-flex;
+    gap: 4px;
+    margin-left: 8px;
+    align-items: center;
+    flex-shrink: 0;
+    max-width: 120px; /* не даст меткам выползать за границы */
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* одна точка-метка */
+.tag-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 12px;
+    color: #222;
+    background: rgba(255,255,255,0.9);
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* при ховере чуть подсказка */
+.tag-dot:hover { box-shadow: 0 0 0 3px rgba(88,224,103,0.15); }
 
 /* форма */
 #review-form input, #review-form textarea {
@@ -126,14 +156,24 @@ body {
     cursor: pointer;
 }
 
-/* при наведении курсор явно "игра" */
-.media-container img, .media-container video.preview {
+/* iframe-embed preview (YouTube / Twitch) */
+.media-container .embed-preview {
+    width: 320px;
+    height: 180px;
+    max-width: 90%;
+    border: none;
     cursor: pointer;
 }
 
-
-
-
+/* twitch fallback link style */
+.twitch-fallback {
+    display:inline-block;
+    padding:6px 10px;
+    background:#222;
+    color:#fff;
+    border-radius:8px;
+    text-decoration:none;
+}
 
 /* аудио */
 .review-card audio { max-width: 100%; margin-top: 10px; display: block; }
