@@ -1,3 +1,5 @@
+/* === существующие стили (оставлены как у тебя) === */
+
 #reviews-container {
     max-width: 600px;
     margin: 20px auto;
@@ -72,6 +74,21 @@
 
 /* при ховере чуть подсказка */
 .tag-dot:hover { box-shadow: 0 0 0 3px rgba(88,224,103,0.15); }
+
+/* NEW-badge: маленький зелёный кружок рядом с датой, пока не просмотрено */
+.new-badge {
+    display:inline-block;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#2ecc40; /* ярко-зелёный */
+    margin-left:6px;
+    flex-shrink:0;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+
+/* подсказка для бейджа */
+.new-badge[title] { cursor: default; }
 
 /* форма */
 #review-form input, #review-form textarea {
