@@ -12,26 +12,20 @@
     margin-bottom: 20px;
 }
 
-/* ---- Новая структура: каждая карточка отзыва ----
-   .review-card — контейнер одного отзыва
-   внутри: .header-block (ник+дата) и .content-block (текст)
-   между header и content — 1px; между карточками — 5px
-*/
+/* карточка отзыва */
 .review-card {
-    margin-bottom: 15px; /* расстояние между разными комментариями = 10px */
+    margin-bottom: 5px; /* расстояние между разными комментариями = 5px */
 }
 
-/* header и content — отдельные блоки, оба выглядят как твои ранее
-   (сохраняем текущий фон и скругления). Разделяем 1px через margin/padding. */
+/* header и content */
 .review-card .header-block,
 .review-card .content-block {
-    background-color: #bce0cb;
+    background-color: #ede8e8;
     padding: 10px;
     border-radius: 6px;
     margin: 0;
 }
 
-/* header чуть более тёмный/жирный — но в рамках твоего стиля */
 .review-card .header-block {
     font-weight: 700;
     color: #222;
@@ -41,17 +35,15 @@
     gap: 8px;
 }
 
-/* content блок (сам комментарий) — сохраняет общий вид, но скругления нижние */
 .review-card .content-block {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
 
-/* Если нужно, можно отдельно выделить ник и дату, но уже определены стили выше */
 .review-card .nickname { font-weight: 700; color: #222; }
 .review-card .datetime { font-weight: 700; color: #222; }
 
-/* форма — сохраним как у тебя был */
+/* форма */
 #review-form input, #review-form textarea {
     width: 100%;
     padding: 7px;
@@ -72,10 +64,8 @@
 }
 #review-form button:hover { background-color: #4caf50; }
 
-/* тело и фон- анимация — оставил как в оригинале */
-body {
-    background-color: #000;
-}
+/* фон и анимация */
+body { background-color: #000; }
 @keyframes dvdAnimation {
     0% { background-position: 0 0; }
     50% { background-position: 100% 100%; }
@@ -100,19 +90,25 @@ body {
     color: #58e067;
 }
 
-/* Медиа внутри карточки — картинки и аудио */
-.review-card img {
-    display: block;
-    margin-top: 10px;
-    max-width: 200px;
-    max-height: 200px;
-    cursor: pointer;
-    transition: transform 0.18s ease, filter 0.18s ease;
-}
+/* media внутри карточки */
+.media-container { margin-top: 8px; display:flex; flex-direction:column; gap:8px; }
 
-/* блюр по умолчанию */
-.review-card img.blurred {
-    filter: blur(10px);
+/* изображения */
+.media-container img {
+    max-width: 220px;
+    max-height: 160px;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+    display:block;
+}
+.media-container img.blurred { filter: blur(10px); }
+
+/* локальные видео-превью */
+.media-container video {
+    max-width: 220px;
+    max-height: 160px;
+    cursor: pointer;
+    display:block;
 }
 
 /* аудио */
@@ -126,7 +122,7 @@ body {
 }
 
 /* пагинация */
-#pagination { text-align: center; margin: 10px 0; }
+#pagination { text-align: center; margin: 10px 0; position: relative; }
 #pagination button {
     padding: 6px 10px;
     border-radius: 12px;
@@ -135,22 +131,64 @@ body {
     cursor: pointer;
 }
 #pagination button:disabled { opacity: 0.5; cursor: default; }
-#pagination span { margin: 0 10px; color: #222; font-weight:700; }
 
-/* Lightbox overlay — фиксированное окно поверх контента для увеличения изображения
-   overlay прозрачный, чтобы не менять визуальную стилистику, но обеспечить фиксированное позиционирование. */
+/* кнопка-номер выглядит как plain text, но кликабельна */
+#page-number {
+    background: transparent;
+    border: none;
+    color: #222;
+    font-weight: 700;
+    margin: 0 10px;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px 6px;
+}
+
+/* выпадающий список страниц */
+.page-dropdown {
+    position: absolute;
+    top: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    z-index: 2000;
+    max-height: 240px;
+    overflow-y: auto;
+    min-width: 120px;
+}
+.page-dropdown button {
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:6px 8px;
+    background: none;
+    border:none;
+    cursor:pointer;
+}
+.page-dropdown button:hover { background:#eee; }
+
+/* lightbox overlay */
 #image-lightbox {
     position: fixed;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: rgba(0,0,0,0.45);
     z-index: 9999;
-    background: rgba(0,0,0,0.45); /* лёгкая затемняющая подложка для фокуса */
 }
-#image-lightbox img {
-    max-width: 90%;
-    max-height: 90%;
+#image-lightbox img, #image-lightbox video, #image-lightbox iframe {
+    max-width: 95%;
+    max-height: 95%;
     box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-    cursor: pointer;
+}
+
+/* мобильная оптимизация */
+@media (max-width:480px) {
+    .media-container img, .media-container video { max-width: 180px; max-height: 140px; }
+    .page-dropdown { left: 50%; transform: translateX(-50%); }
 }

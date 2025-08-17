@@ -1,4 +1,3 @@
-<!-- reviews.html (updated: functionality fixed, original look preserved) -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -18,16 +17,24 @@
         <!-- Пагинация (книжная) -->
         <div id="pagination" style="text-align:center; margin-bottom:10px;">
             <button id="prev-page">←</button>
-            <span id="page-number">1</span>
+
+            <!-- Номер страницы теперь — кнопка (визуально как текст) -->
+            <button id="page-number" class="page-number-btn" aria-haspopup="true" aria-expanded="false">1</button>
+
             <button id="next-page">→</button>
+
+            <!-- компактный выпадающий список страниц (показ/скрытие через JS) -->
+            <div id="page-dropdown" class="page-dropdown" style="display:none;"></div>
         </div>
 
         <form id="review-form">
             <input type="text" id="nickname" placeholder="Ваше ИМЯ" required maxlength="30">
             <textarea id="review-text" placeholder="Ваш комментарий" required maxlength="250"></textarea>
 
-            <!-- ЕДИНАЯ кнопка, можно выбрать до 2 файлов -->
-            <input type="file" id="review-media" accept="image/jpeg,image/png,image/gif,audio/mpeg" multiple>
+            <!-- ЕДИНАЯ кнопка: можно выбрать несколько файлов (до 2, проверки в JS) -->
+            <input type="file" id="review-media"
+                   accept="image/jpeg,image/png,image/gif,audio/mpeg,video/mp4,video/webm,video/quicktime"
+                   multiple>
 
             <button type="submit">Оставить мнение</button>
             <a href="index.html">Вернуться на главную</a>
@@ -46,7 +53,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script>
-        // Firebase config (оставляем твой конфиг)
+        // Firebase config 
         const firebaseConfig = {
             apiKey: "AIzaSyBWTq4kFtsD0dFUc5ZlrCAcXUmi9p-JiTE",
             authDomain: "ehchobyahzavoz.firebaseapp.com",
@@ -55,7 +62,12 @@
             messagingSenderId: "196426611905",
             appId: "1:196426611905:web:be91e86e1ac8964877a840"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+            console.log('[REVIEWS] Firebase initialized');
+        } else {
+            console.log('[REVIEWS] Firebase already initialized');
+        }
     </script>
 
     <script src="reviews.js"></script>
