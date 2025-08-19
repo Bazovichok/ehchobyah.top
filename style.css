@@ -2,7 +2,7 @@
 * { box-sizing: border-box; }
 html, body {
     height: 100%;
-    margin: 0;       /* критично: убираем margin у body, чтобы фон занимал весь экран корректно */
+    margin: 0;       
     padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
