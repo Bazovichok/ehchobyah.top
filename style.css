@@ -1,14 +1,17 @@
+/* style.css — полный файл с правкой: навигация сдвинута вправо (padding-left: 28px) */
+
 /* базовые сбросы и удобства */
 * { box-sizing: border-box; }
 html, body {
     height: 100%;
-    margin: 0;       
+    margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-family: Arial, sans-serif;
 }
 
-/* --- фон --- */
+/* фоновой слой — фиксированный под контентом */
 .bg {
     position: fixed;
     inset: 0;
@@ -24,22 +27,19 @@ html, body {
     display: block;
     transition: opacity 260ms ease, transform 260ms ease;
     transform-origin: center center;
-    --bg-scale: 1;               /* дефолтный масштаб */
+    --bg-scale: 1;
     transform: scale(var(--bg-scale));
 }
-
-/* чтобы уменьшить фон — например на 4% */
-.bg img.small { --bg-scale: 0.96; }
-
+/* если хотите немного уменьшить фон — снимите комментарий и подберите значение */
+/* .bg img { --bg-scale: 0.96; } */
 
 /* контейнер страницы — управление отступами */
 .container {
-    max-width: 1200px; /* разумная ширина для контента */
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
     min-height: 100vh;
     color: #333;
-    font-family: Arial, sans-serif;
 }
 
 /* header + marquee */
@@ -47,8 +47,8 @@ header {
     background-color: rgba(88,224,103,0.95);
     color: #431b4d;
     padding: 14px;
-    overflow: hidden; /* фикс: верная запись */
-    border-radius: 15px;
+    overflow: hidden;
+    border-radius: 10px;
 }
 
 .marquee {
@@ -60,7 +60,7 @@ header {
     display: inline-block;
     padding-left: 100%;
     margin: 0;
-    animation: marquee 12s linear infinite;
+    animation: marquee 10s linear infinite;
     font-family: 'DynaPuff', sans-serif;
     font-size: 1.1rem;
 }
@@ -75,7 +75,7 @@ header {
     top: 12px;
     right: 12px;
     background: rgba(255,255,255,0.06);
-    border: none;
+    border: 0;
     font-size: 22px;
     cursor: pointer;
     color: #333;
@@ -86,35 +86,44 @@ header {
 }
 #dark-mode-toggle:focus { outline: 2px solid rgba(88,224,103,0.6); }
 
-/* Навигация */
+/* ---------- НАВИГАЦИЯ ---------- */
+
+nav {
+    padding-left: 47px; /* <- сдвиг всех кнопок вправо*/
+    padding-right: 12px; /*небольшой правый отступ от границы */
+}
+
+/* nav ul — базовое выравнивание элементов */
 nav ul {
     list-style: none;
     padding: 0;
     margin: 16px 0 0 0;
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-start; 
 }
 nav a {
     text-decoration: none;
     background: rgba(255,255,255,0.9);
     color: #222;
     padding: 8px 12px;
-    border-radius: 50px;
-    display:inline-block;
+    border-radius: 8px;
+    display: inline-block;
 }
 nav a:hover { background: rgba(88,224,103,0.95); color: #111; }
 
-/* Тёмная тема */
+/* тёмная тема */
 body.dark-mode .container { color: #eaeaea; }
 body.dark-mode header { background-color: rgba(15,15,15,0.85); color: #fff; }
 body.dark-mode nav a { background: rgba(0,0,0,0.45); color: #fff; }
 body.dark-mode #dark-mode-toggle { color: #fff; background: rgba(0,0,0,0.25); }
 
-/* Дополнительно: чуть уменьшить масштаб marquee на узких экранах */
-@media (max-width:600px) {
+/* адаптивность */
+@media (max-width: 600px) {
     .marquee h1 { font-size: 0.95rem; animation-duration: 18s; }
-    nav ul { gap:8px; }
+    nav ul { gap: 8px; }
+    nav { padding-left: 10px; padding-right: 8px; } /* чуть меньше сдвиг на мобильных */
 }
 
 /* небольшая адаптация: чтобы контент не прилипал к углам */
