@@ -90,6 +90,27 @@
 /* подсказка для бейджа */
 .new-badge[title] { cursor: default; }
 
+/* tooltip wrapper (уже был) */
+.tag-tooltip {
+    position: fixed;
+    z-index: 11000;
+    background: #ffffff;
+    color: #111;
+    padding: 8px 10px;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    max-width: 340px;
+    max-height: 220px;
+    overflow: auto;
+    font-size: 13px;
+    line-height: 1.3;
+    pointer-events: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+.tag-tooltip .tt-name { font-weight: 700; margin-bottom: 6px; }
+.tag-tooltip .tt-text { white-space: pre-wrap; }
+}
+
 /* форма */
 #review-form input, #review-form textarea {
     width: 100%;

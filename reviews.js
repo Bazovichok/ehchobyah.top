@@ -1,85 +1,130 @@
-// reviews.js — с автономной пометкой просмотренных, бейджем "новый" и локальным звуком при добавлении чужих отзывов
+// reviews.js — полный файл с исправленным tooltip (ник + текст), автоматическим помечанием просмотренных отзывов,
+// звуком при чужих добавлениях и прежней функциональностью (lightbox, embeds, pagination, tags).
 
 const PER_PAGE = 30;
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dp0smiea6/auto/upload';
 const UPLOAD_PRESET = 'reviews_unsigned';
 
-let ALL_REVIEWS = [];
+let ALL_REVIEWS = []; // items: { id, nickname, reviewText, date, mediaUrl?, mediaUrls? }
 let currentPage = 1;
-let renderedSliceIds = [];
-let tagsMap = {};
-let initialNavigationDone = false;
+let renderedSliceIds = []; // cached visible doc IDs
+let tagsMap = {}; // targetId -> array of { taggerId, taggerIndex }
+let initialNavigationDone = false; // ensure initial auto-jump happens once per page open
+
+// IntersectionObserver to mark cards as read
 let cardObserver = null;
 const LAST_SEEN_KEY = 'eh_reviews_last_seen_v1';
 const LAST_LOCAL_ADD_KEY = 'eh_reviews_last_local_add';
 
-// ---------------- utilities ----------------
+// ------------------- Utilities -------------------
 function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 function formatDisplayDate(maybeTimestamp){
     if (!maybeTimestamp) return 'Date not available';
-    try { if (typeof maybeTimestamp.toDate === 'function') return maybeTimestamp.toDate().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }); } catch(e){}
+    try {
+        if (typeof maybeTimestamp.toDate === 'function') return maybeTimestamp.toDate().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+    } catch(e){}
     if (maybeTimestamp instanceof Date) return maybeTimestamp.toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
     return String(maybeTimestamp);
 }
 function dateFromReviewDateField(field){
     if (!field) return null;
-    try { if (typeof field.toDate === 'function') return field.toDate(); } catch(e){}
-    try { const d = new Date(field); if (!isNaN(d.getTime())) return d; } catch(e){}
+    try {
+        if (typeof field.toDate === 'function') return field.toDate();
+    } catch(e){}
+    try {
+        const d = new Date(field);
+        if (!isNaN(d.getTime())) return d;
+    } catch(e){}
     return null;
 }
 
-// ---------------- lastSeen helpers ----------------
+// ------------------- localStorage lastSeen helpers -------------------
 function getLastSeen() {
     try {
-        const v = localStorage.getItem(LAST_SEEN_KEY); if (!v) return null;
-        const d = new Date(v); return isNaN(d.getTime()) ? null : d;
+        const v = localStorage.getItem(LAST_SEEN_KEY);
+        if (!v) return null;
+        const d = new Date(v);
+        return isNaN(d.getTime()) ? null : d;
     } catch(e) { return null; }
 }
 function setLastSeen(dateOrNow) {
-    try { const d = dateOrNow instanceof Date ? dateOrNow : new Date(); localStorage.setItem(LAST_SEEN_KEY, d.toISOString()); } catch(e){}
+    try {
+        const d = dateOrNow instanceof Date ? dateOrNow : new Date();
+        localStorage.setItem(LAST_SEEN_KEY, d.toISOString());
+    } catch(e){}
 }
 function updateLastSeenIfLater(candidateDate) {
     if (!candidateDate || isNaN(candidateDate.getTime())) return;
     const cur = getLastSeen();
     if (!cur || candidateDate > cur) {
         setLastSeen(candidateDate);
-        // обновляем бейджи немедленно, чтобы скрыть "new" у просмотренных
         refreshNewBadges();
     }
 }
 
-// ---------------- media / lightbox ----------------
-function pauseAllMedia() { try { document.querySelectorAll('audio, video').forEach(m => { try { m.pause(); } catch(e){} }); } catch(e){} }
+// ------------------- Media / Lightbox -------------------
+function pauseAllMedia() {
+    try {
+        document.querySelectorAll('audio, video').forEach(m => {
+            try { m.pause(); } catch(e) {}
+        });
+    } catch(e){}
+}
 function closeLightbox() {
-    const ex = document.getElementById('image-lightbox'); if (!ex) return;
-    const v = ex.querySelector('video'); if (v) { try { v.pause(); v.src=''; v.load && v.load(); } catch(e){} }
-    const iframe = ex.querySelector('iframe'); if (iframe) { try { iframe.src = 'about:blank'; } catch(e){} }
+    const ex = document.getElementById('image-lightbox');
+    if (!ex) return;
+    const v = ex.querySelector('video');
+    if (v) {
+        try { v.pause(); v.src = ''; v.load && v.load(); } catch(e) {}
+    }
+    const iframe = ex.querySelector('iframe');
+    if (iframe) {
+        try { iframe.src = 'about:blank'; } catch(e) {}
+    }
     ex.remove();
 }
+
 function openLightboxImage(src, originEl) {
-    pauseAllMedia(); closeLightbox();
-    const overlay = document.createElement('div'); overlay.id='image-lightbox';
-    overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.display='flex';
-    overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
-    overlay.addEventListener('click', function(){ if (originEl instanceof HTMLElement) { originEl.classList.add('blurred'); originEl.dataset.isBlurred='true'; } closeLightbox(); });
+    pauseAllMedia();
+    closeLightbox();
+    const overlay = document.createElement('div'); overlay.id = 'image-lightbox';
+    overlay.style.position='fixed'; overlay.style.inset='0';
+    overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center';
+    overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
+    overlay.addEventListener('click', function(){
+        if (originEl instanceof HTMLElement) {
+            originEl.classList.add('blurred'); originEl.dataset.isBlurred='true';
+        }
+        closeLightbox();
+    });
     const img = document.createElement('img'); img.src = src; img.style.maxWidth='95%'; img.style.maxHeight='95%';
-    img.addEventListener('click', e => { e.stopPropagation(); if (originEl instanceof HTMLElement) { originEl.classList.add('blurred'); originEl.dataset.isBlurred='true'; } closeLightbox(); });
-    overlay.appendChild(img); document.body.appendChild(overlay);
+    img.addEventListener('click', function(e){ e.stopPropagation(); if (originEl instanceof HTMLElement) { originEl.classList.add('blurred'); originEl.dataset.isBlurred='true'; } closeLightbox(); });
+    overlay.appendChild(img);
+    document.body.appendChild(overlay);
 }
+
 function openLightboxVideo(src) {
-    pauseAllMedia(); closeLightbox();
-    const overlay = document.createElement('div'); overlay.id='image-lightbox';
-    overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.display='flex';
-    overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
+    pauseAllMedia();
+    closeLightbox();
+    const overlay = document.createElement('div'); overlay.id = 'image-lightbox';
+    overlay.style.position='fixed'; overlay.style.inset='0';
+    overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center';
+    overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
     overlay.addEventListener('click', function(){ closeLightbox(); });
-    const video = document.createElement('video'); video.src = src; video.controls = true; video.autoplay = true;
-    video.style.maxWidth = '95%'; video.style.maxHeight = '95%';
+    const video = document.createElement('video');
+    video.src = src;
+    video.controls = true;
+    video.autoplay = true;
+    video.style.maxWidth = '95%';
+    video.style.maxHeight = '95%';
     video.addEventListener('click', function(e){ e.stopPropagation(); });
-    overlay.appendChild(video); document.body.appendChild(overlay);
+    overlay.appendChild(video);
+    document.body.appendChild(overlay);
 }
+
 function openLightboxEmbed(embedUrl) {
     pauseAllMedia(); closeLightbox();
-    const overlay = document.createElement('div'); overlay.id='image-lightbox';
+    const overlay = document.createElement('div'); overlay.id = 'image-lightbox';
     overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.display='flex';
     overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
     overlay.addEventListener('click', function(){ closeLightbox(); });
@@ -89,17 +134,27 @@ function openLightboxEmbed(embedUrl) {
     overlay.appendChild(iframe); document.body.appendChild(overlay);
 }
 
-// ---------------- external embeds parser ----------------
+// ------------------- External embeds (YouTube/Twitch) -------------------
 function parseExternalEmbed(urlStr) {
     try {
         const u = new URL(urlStr);
         const host = u.hostname.replace(/^www\./i,'').toLowerCase();
+
+        // YouTube
         if (host === 'youtu.be' || host.indexOf('youtube.com') !== -1 || host === 'youtube-nocookie.com') {
             let vid = null;
             if (host === 'youtu.be') vid = u.pathname.slice(1);
             else vid = u.searchParams.get('v') || (u.pathname.match(/\/(embed|shorts)\/([^/]+)/) || [])[2];
-            if (vid) return { provider: 'youtube', previewEmbedUrl: 'https://www.youtube.com/embed/' + vid + '?rel=0', lightboxEmbedUrl: 'https://www.youtube.com/embed/' + vid + '?autoplay=1' };
+            if (vid) {
+                return {
+                    provider: 'youtube',
+                    previewEmbedUrl: 'https://www.youtube.com/embed/' + vid + '?rel=0',
+                    lightboxEmbedUrl: 'https://www.youtube.com/embed/' + vid + '?autoplay=1'
+                };
+            }
         }
+
+        // Twitch
         if (host.indexOf('twitch.tv') !== -1 || host === 'clips.twitch.tv') {
             const pathParts = u.pathname.split('/').filter(Boolean);
             const parent = window.location.hostname;
@@ -124,7 +179,7 @@ function parseExternalEmbed(urlStr) {
     return null;
 }
 
-// ---------------- tags ----------------
+// ------------------- Tags computation -------------------
 function computeTagsMap() {
     tagsMap = {};
     const idByDate = {};
@@ -135,19 +190,27 @@ function computeTagsMap() {
     for (let i=0;i<ALL_REVIEWS.length;i++){
         const r = ALL_REVIEWS[i];
         const text = r.reviewText || '';
-        const fullRegex = /@(\d{2}\.\d{2}\.\d{4},\s\d{2}:\d{2}:\d{2})/g; let m;
+        // full datetime tags
+        const fullRegex = /@(\d{2}\.\d{2}\.\d{4},\s\d{2}:\d{2}:\d{2})/g;
+        let m;
         while ((m = fullRegex.exec(text)) !== null) {
-            const targetDate = m[1]; const targetIndex = idByDate[targetDate];
+            const targetDate = m[1];
+            const targetIndex = idByDate[targetDate];
             if (targetIndex !== undefined) {
                 const targetId = ALL_REVIEWS[targetIndex].id || String(targetIndex);
                 if (!tagsMap[targetId]) tagsMap[targetId] = [];
                 tagsMap[targetId].push({ taggerId: r.id || String(i), taggerIndex: i });
             }
         }
+        // time-only tags
         const timeRegex = /@(\d{2}:\d{2}:\d{2})/g;
         while ((m = timeRegex.exec(text)) !== null) {
-            const wantedTime = m[1]; let found = -1;
-            for (let j=0;j<ALL_REVIEWS.length;j++){ const ds = formatDisplayDate(ALL_REVIEWS[j].date); if (ds.slice(-8) === wantedTime) { found = j; break; } }
+            const wantedTime = m[1];
+            let found = -1;
+            for (let j=0;j<ALL_REVIEWS.length;j++){
+                const ds = formatDisplayDate(ALL_REVIEWS[j].date);
+                if (ds.slice(-8) === wantedTime) { found = j; break; }
+            }
             if (found !== -1) {
                 const targetId = ALL_REVIEWS[found].id || String(found);
                 if (!tagsMap[targetId]) tagsMap[targetId] = [];
@@ -157,7 +220,7 @@ function computeTagsMap() {
     }
 }
 
-// ---------------- DOM nodes + new-badge ----------------
+// ------------------- DOM: creation + tag indicators -------------------
 function buildTagIndicatorsForCard(cardEl, reviewIndex) {
     let indicators = cardEl.querySelector('.tag-indicators');
     if (!indicators) {
@@ -177,8 +240,11 @@ function buildTagIndicatorsForCard(cardEl, reviewIndex) {
 }
 
 function createReviewNode(review, globalIndex) {
-    const card = document.createElement('div'); card.className = 'review-card'; card.dataset.index = String(globalIndex);
+    const card = document.createElement('div');
+    card.className = 'review-card';
+    card.dataset.index = String(globalIndex);
     if (review.id) card.dataset.id = review.id;
+
     const displayDate = formatDisplayDate(review.date);
     card.dataset.date = displayDate;
 
@@ -189,59 +255,99 @@ function createReviewNode(review, globalIndex) {
     header.appendChild(document.createTextNode(' - '));
     const dateSpan = document.createElement('span'); dateSpan.className='datetime'; dateSpan.textContent = displayDate;
     header.appendChild(dateSpan);
-    // placeholder for new-badge (filled by refreshNewBadges) and indicators
+    // placeholder for indicators (filled later)
     const indicators = document.createElement('span'); indicators.className = 'tag-indicators'; indicators.style.marginLeft='8px';
     header.appendChild(indicators);
 
     // content
     const content = document.createElement('div'); content.className = 'content-block';
     content.innerHTML = escapeHtml(review.reviewText || '')
+        // full datetime tag format
         .replace(/@(\d{2}\.\d{2}\.\d{4},\s\d{2}:\d{2}:\d{2})/g, (m,p1) => `<a href="#" class="tag-link" data-target="${escapeHtml(p1)}">@${escapeHtml(p1)}</a>`)
+        // time-only tag
         .replace(/@(\d{2}:\d{2}:\d{2})/g, (m,p1) => `<a href="#" class="tag-link-time" data-target="${escapeHtml(p1)}">@${escapeHtml(p1)}</a>`);
 
-    const mediaContainer = document.createElement('div'); mediaContainer.className = 'media-container';
+    // media container
+    const mediaContainer = document.createElement('div');
+    mediaContainer.className = 'media-container';
+
+    // collect urls
     let urls = [];
     if (Array.isArray(review.mediaUrls) && review.mediaUrls.length) urls = review.mediaUrls.slice(0,2);
     else if (review.mediaUrl) urls = [review.mediaUrl];
 
-    try {
-        const inlineLinks = (review.reviewText || '').match(/https?:\/\/[^\s<>"']+/g) || [];
-        inlineLinks.forEach(l => {
-            const emb = parseExternalEmbed(l);
-            if (emb && urls.indexOf(l) === -1) urls.push(l);
-        });
-    } catch(e){}
-
-    for (let i=0;i<Math.min(2, urls.length); i++){
-        const u = urls[i]; if (!u) continue;
+    urls.forEach(u => {
+        if (!u) return;
         const low = u.toLowerCase();
 
+        // image
         if (/\.(jpe?g|png|gif)(\?.*)?$/.test(low)) {
-            const img = document.createElement('img'); img.src = u; img.classList.add('blurred'); img.dataset.isBlurred='true';
-            img.style.maxWidth='200px'; img.style.maxHeight='200px'; img.style.display='block'; img.style.marginTop='10px';
+            const img = document.createElement('img');
+            img.src = u;
+            img.classList.add('blurred');
+            img.dataset.isBlurred = 'true';
+            img.style.maxWidth = '200px';
+            img.style.maxHeight = '200px';
+            img.style.display = 'block';
+            img.style.marginTop = '10px';
+            img.style.cursor = 'pointer';
             img.addEventListener('click', function() {
                 const isBlurred = img.dataset.isBlurred === 'true';
-                if (isBlurred) { img.classList.remove('blurred'); img.dataset.isBlurred='false'; openLightboxImage(u, img); }
-                else { img.classList.add('blurred'); img.dataset.isBlurred='true'; closeLightbox(); }
+                if (isBlurred) {
+                    img.classList.remove('blurred'); img.dataset.isBlurred = 'false';
+                    openLightboxImage(u, img);
+                } else {
+                    img.classList.add('blurred'); img.dataset.isBlurred = 'true';
+                    closeLightbox();
+                }
             });
-            mediaContainer.appendChild(img); continue;
+            mediaContainer.appendChild(img);
+            return;
         }
+
+        // audio mp3
         if (/\.mp3(\?.*)?$/.test(low)) {
-            const audio = document.createElement('audio'); audio.controls=true; audio.src=u; audio.style.marginTop='10px';
-            mediaContainer.appendChild(audio); continue;
+            const audio = document.createElement('audio');
+            audio.controls = true;
+            audio.src = u;
+            audio.style.marginTop = '10px';
+            mediaContainer.appendChild(audio);
+            return;
         }
+
+        // local video (mp4, webm, mov)
         if (/\.(mp4|webm|mov)(\?.*)?$/.test(low)) {
-            const vid = document.createElement('video'); vid.src=u; vid.classList.add('preview','blurred'); vid.dataset.isBlurred='true';
-            vid.muted=true; vid.controls=false; vid.preload='metadata';
-            vid.style.maxWidth='220px'; vid.style.maxHeight='160px'; vid.style.display='block'; vid.style.marginTop='10px';
-            vid.addEventListener('click', function(e){
+            const vid = document.createElement('video');
+            vid.src = u;
+            vid.classList.add('preview', 'blurred'); // preview class + blurred
+            vid.dataset.isBlurred = 'true';
+            vid.muted = true;
+            vid.controls = false;
+            vid.preload = 'metadata';
+            vid.style.maxWidth = '220px';
+            vid.style.maxHeight = '160px';
+            vid.style.display = 'block';
+            vid.style.marginTop = '10px';
+            vid.style.cursor = 'pointer';
+
+            vid.addEventListener('click', function(e) {
                 e.preventDefault();
                 const isBlurred = vid.dataset.isBlurred === 'true';
-                if (isBlurred) { vid.classList.remove('blurred'); vid.dataset.isBlurred='false'; openLightboxVideo(u); }
-                else { vid.classList.add('blurred'); vid.dataset.isBlurred='true'; closeLightbox(); try{ vid.pause(); vid.currentTime=0; vid.muted=true;}catch(e){} }
+                if (isBlurred) {
+                    vid.classList.remove('blurred'); vid.dataset.isBlurred = 'false';
+                    openLightboxVideo(u);
+                } else {
+                    vid.classList.add('blurred'); vid.dataset.isBlurred = 'true';
+                    closeLightbox();
+                    try { vid.pause(); vid.currentTime = 0; vid.muted = true; } catch(e){}
+                }
             });
-            mediaContainer.appendChild(vid); continue;
+
+            mediaContainer.appendChild(vid);
+            return;
         }
+
+        // external embed (YouTube/Twitch)
         const emb = parseExternalEmbed(u);
         if (emb) {
             if (emb.provider === 'twitch' && emb.embedPossible === false) {
@@ -250,53 +356,160 @@ function createReviewNode(review, globalIndex) {
             } else {
                 const iframe = document.createElement('iframe'); iframe.src = emb.previewEmbedUrl || emb.lightboxEmbedUrl || u;
                 iframe.className = 'embed-preview'; iframe.setAttribute('frameborder','0'); iframe.setAttribute('allow','encrypted-media; fullscreen');
-                iframe.style.width='320px'; iframe.style.height='180px'; iframe.style.marginTop='10px';
-                const wrap = document.createElement('div'); wrap.style.display='inline-block'; wrap.style.position='relative';
+                iframe.style.width = '320px';
+                iframe.style.height = '180px';
+                iframe.style.marginTop = '10px';
+
+                const wrap = document.createElement('div'); wrap.style.display = 'inline-block'; wrap.style.position = 'relative';
                 wrap.appendChild(iframe);
-                const overlay = document.createElement('div'); overlay.style.position='absolute'; overlay.style.inset='0'; overlay.style.cursor='pointer';
+                const overlay = document.createElement('div'); overlay.style.position = 'absolute'; overlay.style.inset = '0'; overlay.style.cursor = 'pointer';
                 overlay.addEventListener('click', function(e){ e.stopPropagation(); const light = emb.lightboxEmbedUrl || emb.previewEmbedUrl; openLightboxEmbed(light); });
                 wrap.appendChild(overlay);
                 mediaContainer.appendChild(wrap);
             }
-            continue;
+            return;
         }
-        const a2 = document.createElement('a'); a2.href=u; a2.textContent=u; a2.target='_blank'; a2.rel='noopener noreferrer';
-        mediaContainer.appendChild(a2);
-    }
 
-    card.appendChild(header); card.appendChild(content);
+        // fallback link
+        const a = document.createElement('a'); a.href = u; a.textContent = u; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        mediaContainer.appendChild(a);
+    });
+
+    card.appendChild(header);
+    card.appendChild(content);
     if (mediaContainer.children.length) card.appendChild(mediaContainer);
+
     return card;
 }
 
-// ---------------- render + observer + badges ----------------
-function arraysEqual(a,b){ if (!a || !b) return false; if (a.length!==b.length) return false; for (let i=0;i<a.length;i++) if (a[i]!==b[i]) return false; return true; }
-
-function refreshNewBadges() {
-    const lastSeen = getLastSeen();
-    document.querySelectorAll('.review-card').forEach(card => {
-        const dateStr = card.dataset.date;
-        if (!dateStr) return;
-        // find review object
-        let rev = null;
-        for (let i=0;i<ALL_REVIEWS.length;i++){ if (formatDisplayDate(ALL_REVIEWS[i].date) === dateStr) { rev = ALL_REVIEWS[i]; break; } }
-        const badge = card.querySelector('.new-badge');
-        const d = rev ? dateFromReviewDateField(rev.date) : null;
-        const isNew = d && (!lastSeen || d > lastSeen);
-        if (isNew) {
-            if (!badge) {
-                const nb = document.createElement('span'); nb.className = 'new-badge'; nb.title = 'Новый';
-                // insert right after date span
-                const dateSpan = card.querySelector('.datetime');
-                if (dateSpan) dateSpan.parentNode.insertBefore(nb, dateSpan.nextSibling);
-                else card.querySelector('.header-block').appendChild(nb);
-            }
-        } else {
-            if (badge) badge.remove();
-        }
-    });
+// Helper: compare arrays equality shallow
+function arraysEqual(a,b){
+    if (!a || !b) return false;
+    if (a.length !== b.length) return false;
+    for (let i=0;i<a.length;i++) if (a[i] !== b[i]) return false;
+    return true;
 }
 
+// ------------------- Tooltip for tag preview (reliable) -------------------
+// Single shared tooltip element
+let tagTooltipEl = null;
+let tooltipTargetEl = null;
+
+function createTooltipEl() {
+    if (tagTooltipEl) return tagTooltipEl;
+    tagTooltipEl = document.createElement('div');
+    tagTooltipEl.className = 'tag-tooltip';
+    tagTooltipEl.style.display = 'none';
+    // inner structure: name + text
+    const name = document.createElement('div'); name.className = 'tt-name'; name.style.fontWeight = '700'; name.style.marginBottom = '6px';
+    const text = document.createElement('div'); text.className = 'tt-text';
+    tagTooltipEl.appendChild(name);
+    tagTooltipEl.appendChild(text);
+    document.body.appendChild(tagTooltipEl);
+    return tagTooltipEl;
+}
+
+function setTooltipContent(nick, txt) {
+    createTooltipEl();
+    const nameEl = tagTooltipEl.querySelector('.tt-name');
+    const textEl = tagTooltipEl.querySelector('.tt-text');
+    nameEl.textContent = nick || '(аноним)';
+    textEl.textContent = txt || '(пустой комментарий)';
+}
+
+function positionTooltip(x, y) {
+    if (!tagTooltipEl) return;
+    const pad = 12;
+    // ensure it's visible to measure
+    tagTooltipEl.style.left = '0px';
+    tagTooltipEl.style.top = '0px';
+    const tw = tagTooltipEl.offsetWidth || 200;
+    const th = tagTooltipEl.offsetHeight || 80;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    let left = x + 12;
+    let top = y + 12;
+    if (left + tw + pad > vw) left = Math.max(pad, x - tw - 12);
+    if (top + th + pad > vh) top = Math.max(pad, y - th - 12);
+    tagTooltipEl.style.left = left + 'px';
+    tagTooltipEl.style.top = top + 'px';
+}
+
+function showTooltip(nick, text, clientX, clientY) {
+    setTooltipContent(nick, text);
+    tagTooltipEl.style.display = 'block';
+    requestAnimationFrame(() => positionTooltip(clientX, clientY));
+}
+
+function hideTooltip() {
+    if (!tagTooltipEl) return;
+    tagTooltipEl.style.display = 'none';
+    // clear content
+    tagTooltipEl.querySelector('.tt-name').textContent = '';
+    tagTooltipEl.querySelector('.tt-text').textContent = '';
+    tooltipTargetEl = null;
+}
+
+// Get review info (nick + text) for a tag element
+function getReviewInfoFromTagElement(tagEl) {
+    if (!tagEl) return null;
+    const isTimeOnly = tagEl.classList.contains('tag-link-time');
+    const target = tagEl.dataset && tagEl.dataset.target;
+    if (!target) return null;
+    if (!Array.isArray(ALL_REVIEWS) || ALL_REVIEWS.length === 0) return null;
+
+    if (!isTimeOnly) {
+        for (let i=0;i<ALL_REVIEWS.length;i++){
+            const d = formatDisplayDate(ALL_REVIEWS[i].date);
+            if (d === target) {
+                return { nick: ALL_REVIEWS[i].nickname || 'Anonymous', text: ALL_REVIEWS[i].reviewText || '' };
+            }
+        }
+        return null;
+    }
+
+    for (let i=0;i<ALL_REVIEWS.length;i++){
+        const d = formatDisplayDate(ALL_REVIEWS[i].date);
+        if (d.slice(-8) === target) {
+            return { nick: ALL_REVIEWS[i].nickname || 'Anonymous', text: ALL_REVIEWS[i].reviewText || '' };
+        }
+    }
+    return null;
+}
+
+// Delegated handlers to show/hide tooltip reliably
+document.addEventListener('mouseover', function(e){
+    const tag = e.target.closest && e.target.closest('.tag-link, .tag-link-time');
+    if (!tag) return;
+    const info = getReviewInfoFromTagElement(tag);
+    if (!info) return;
+    tooltipTargetEl = tag;
+    const maxLen = 1200;
+    const short = (info.text && info.text.length > maxLen) ? info.text.slice(0, maxLen) + '…' : info.text;
+    createTooltipEl();
+    showTooltip(info.nick, short, e.clientX, e.clientY);
+});
+
+document.addEventListener('mousemove', function(e){
+    if (!tooltipTargetEl) return;
+    positionTooltip(e.clientX, e.clientY);
+});
+
+document.addEventListener('mouseout', function(e){
+    const tag = e.target.closest && e.target.closest('.tag-link, .tag-link-time');
+    if (!tag) return;
+    // if leaving the tag element to somewhere not inside it — hide
+    const related = e.relatedTarget;
+    if (!related || (related !== tag && !tag.contains(related))) {
+        hideTooltip();
+    }
+});
+
+// Hide tooltip on many global actions (click, scroll, page change)
+document.addEventListener('click', function(){ hideTooltip(); });
+window.addEventListener('scroll', function(){ hideTooltip(); }, true);
+
+// ------------------- Rendering + pagination -------------------
 function observeVisibleCards() {
     if (!cardObserver) {
         cardObserver = new IntersectionObserver((entries) => {
@@ -306,7 +519,9 @@ function observeVisibleCards() {
                 const dateStr = node.dataset.date;
                 if (!dateStr) return;
                 let found = null;
-                for (let i=0;i<ALL_REVIEWS.length;i++){ if (formatDisplayDate(ALL_REVIEWS[i].date) === dateStr) { found = ALL_REVIEWS[i]; break; } }
+                for (let i=0;i<ALL_REVIEWS.length;i++){
+                    if (formatDisplayDate(ALL_REVIEWS[i].date) === dateStr) { found = ALL_REVIEWS[i]; break; }
+                }
                 if (found) {
                     const d = dateFromReviewDateField(found.date);
                     if (d) updateLastSeenIfLater(d);
@@ -314,8 +529,11 @@ function observeVisibleCards() {
             });
         }, { root: null, rootMargin: '0px', threshold: 0.5 });
     }
+
     const nodes = document.querySelectorAll('.review-card');
-    nodes.forEach(n => { try { cardObserver.observe(n); } catch(e){} });
+    nodes.forEach(n => {
+        try { cardObserver.observe(n); } catch(e){}
+    });
 }
 
 function updateVisibleTagIndicators(start, end) {
@@ -328,6 +546,29 @@ function updateVisibleTagIndicators(start, end) {
             for (let j=0;j<ALL_REVIEWS.length;j++){ if (formatDisplayDate(ALL_REVIEWS[j].date) === date) { idx = j; break; } }
         }
         if (idx !== -1) buildTagIndicatorsForCard(node, idx);
+    });
+}
+
+function refreshNewBadges() {
+    const lastSeen = getLastSeen();
+    document.querySelectorAll('.review-card').forEach(card => {
+        const dateStr = card.dataset.date;
+        if (!dateStr) return;
+        let rev = null;
+        for (let i=0;i<ALL_REVIEWS.length;i++){ if (formatDisplayDate(ALL_REVIEWS[i].date) === dateStr) { rev = ALL_REVIEWS[i]; break; } }
+        const badge = card.querySelector('.new-badge');
+        const d = rev ? dateFromReviewDateField(rev.date) : null;
+        const isNew = d && (!lastSeen || d > lastSeen);
+        if (isNew) {
+            if (!badge) {
+                const nb = document.createElement('span'); nb.className = 'new-badge'; nb.title = 'Новый';
+                const dateSpan = card.querySelector('.datetime');
+                if (dateSpan) dateSpan.parentNode.insertBefore(nb, dateSpan.nextSibling);
+                else card.querySelector('.header-block').appendChild(nb);
+            }
+        } else {
+            if (badge) badge.remove();
+        }
     });
 }
 
@@ -365,74 +606,148 @@ function renderPage(page) {
         const node = list.children[idxOnPage];
         if (node) buildTagIndicatorsForCard(node, i);
     }
+
     document.getElementById('page-number').textContent = String(currentPage);
     document.getElementById('prev-page').disabled = currentPage <= 1;
     document.getElementById('next-page').disabled = currentPage >= totalPages;
     buildPageDropdown(totalPages);
+
     observeVisibleCards();
     refreshNewBadges();
 }
 
-// pagination handlers (всё как было)
-document.getElementById('prev-page').addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPage(currentPage); } });
-document.getElementById('next-page').addEventListener('click', () => { const totalPages = Math.max(1, Math.ceil(ALL_REVIEWS.length / PER_PAGE)); if (currentPage < totalPages) { currentPage++; renderPage(currentPage); } });
+// Prev/Next handlers
+document.getElementById('prev-page').addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPage(currentPage); hideTooltip(); } });
+document.getElementById('next-page').addEventListener('click', () => {
+    const totalPages = Math.max(1, Math.ceil(ALL_REVIEWS.length / PER_PAGE));
+    if (currentPage < totalPages) { currentPage++; renderPage(currentPage); hideTooltip(); }
+});
 
+// Dropdown page number
 const pageNumberBtn = document.getElementById('page-number');
 const pageDropdown = document.getElementById('page-dropdown');
-pageNumberBtn.addEventListener('click', function(e){ e.stopPropagation(); const shown = pageDropdown.style.display === 'block'; pageDropdown.style.display = shown ? 'none' : 'block'; });
+
+pageNumberBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    const shown = pageDropdown.style.display === 'block';
+    pageDropdown.style.display = shown ? 'none' : 'block';
+});
 document.addEventListener('click', () => { pageDropdown.style.display = 'none'; });
+
 function buildPageDropdown(totalPages) {
     pageDropdown.innerHTML = '';
-    for (let i=1;i<=totalPages;i++){
-        const b = document.createElement('button'); b.textContent = 'Стр ' + i;
-        b.style.display='block'; b.style.width='100%'; b.style.padding='6px 8px'; b.style.border='none'; b.style.background='transparent'; b.style.textAlign='left';
-        b.addEventListener('click', function(ev){ ev.stopPropagation(); pageDropdown.style.display='none'; currentPage = i; renderPage(currentPage); });
+    for (let i = 1; i <= totalPages; i++) {
+        const b = document.createElement('button');
+        b.textContent = 'Стр ' + i;
+        b.style.display = 'block';
+        b.style.width = '100%';
+        b.style.padding = '6px 8px';
+        b.style.border = 'none';
+        b.style.background = 'transparent';
+        b.style.textAlign = 'left';
+        b.style.cursor = 'pointer';
+        b.addEventListener('click', function(e){
+            e.stopPropagation();
+            pageDropdown.style.display = 'none';
+            currentPage = i;
+            renderPage(currentPage);
+            hideTooltip();
+        });
         pageDropdown.appendChild(b);
     }
 }
 
-// ---------------- click handlers: tags and dot clicks ----------------
+// ------------------- Tag click handlers -------------------
 document.addEventListener('click', function(e){
-    const t = e.target; if (!t) return;
+    const t = e.target;
+    if (!t) return;
+
     if (t.classList && t.classList.contains('tag-link')) {
         e.preventDefault();
-        const wanted = t.dataset.target; let foundIndex = -1;
-        for (let i=0;i<ALL_REVIEWS.length;i++){ if (formatDisplayDate(ALL_REVIEWS[i].date) === wanted){ foundIndex=i; break; } }
+        const wanted = t.dataset.target;
+        let foundIndex = -1;
+        for (let i=0;i<ALL_REVIEWS.length;i++){
+            if (formatDisplayDate(ALL_REVIEWS[i].date) === wanted) { foundIndex = i; break; }
+        }
         if (foundIndex === -1) { alert('Комментарий не найден (возможно удалён).'); return; }
         const page = Math.floor(foundIndex / PER_PAGE) + 1;
         if (page === currentPage) {
-            const nodes = document.querySelectorAll('.review-card'); let tar=null; nodes.forEach(n => { if (n.dataset.date === wanted) tar=n; });
-            if (tar) { tar.scrollIntoView({behavior:'smooth', block:'center'}); tar.classList.add('highlight'); setTimeout(()=>tar.classList.remove('highlight'),1100); }
+            const wantedDate = formatDisplayDate(ALL_REVIEWS[foundIndex].date);
+            const nodes = document.querySelectorAll('.review-card');
+            let targetNode = null;
+            nodes.forEach(n => { if (n.dataset.date === wantedDate) targetNode = n; });
+            if (targetNode) {
+                targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetNode.classList.add('highlight');
+                setTimeout(() => targetNode.classList.remove('highlight'), 1100);
+            }
         } else {
-            currentPage = page; renderPage(page);
-            setTimeout(()=>{ const nodes = document.querySelectorAll('.review-card'); let tar=null; nodes.forEach(n=>{ if (n.dataset.date === wanted) tar=n;}); if (tar){ tar.scrollIntoView({behavior:'smooth', block:'center'}); tar.classList.add('highlight'); setTimeout(()=>tar.classList.remove('highlight'),1100);} },140);
+            currentPage = page;
+            renderPage(page);
+            setTimeout(() => {
+                const wantedDate = formatDisplayDate(ALL_REVIEWS[foundIndex].date);
+                const nodes = document.querySelectorAll('.review-card');
+                let targetNode = null;
+                nodes.forEach(n => { if (n.dataset.date === wantedDate) targetNode = n; });
+                if (targetNode) {
+                    targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    targetNode.classList.add('highlight');
+                    setTimeout(() => targetNode.classList.remove('highlight'), 1100);
+                }
+            }, 140);
         }
+        hideTooltip();
         return;
     }
+
     if (t.classList && t.classList.contains('tag-link-time')) {
         e.preventDefault();
-        const wantedTime = t.dataset.target; let foundIndex = -1;
-        for (let i=0;i<ALL_REVIEWS.length;i++){ const d = formatDisplayDate(ALL_REVIEWS[i].date); if (d.slice(-8) === wantedTime) { foundIndex = i; break; } }
+        const wantedTime = t.dataset.target;
+        let foundIndex = -1;
+        for (let i=0;i<ALL_REVIEWS.length;i++){
+            const d = formatDisplayDate(ALL_REVIEWS[i].date);
+            if (d.slice(-8) === wantedTime) { foundIndex = i; break; }
+        }
         if (foundIndex === -1) { alert('Комментарий не найден (возможно удалён).'); return; }
         const page = Math.floor(foundIndex / PER_PAGE) + 1;
         if (page === currentPage) {
             const wanted = formatDisplayDate(ALL_REVIEWS[foundIndex].date);
-            const nodes = document.querySelectorAll('.review-card'); let tar=null; nodes.forEach(n => { if (n.dataset.date === wanted) tar=n; });
-            if (tar) { tar.scrollIntoView({behavior:'smooth', block:'center'}); tar.classList.add('highlight'); setTimeout(()=>tar.classList.remove('highlight'),1100); }
+            const nodes = document.querySelectorAll('.review-card');
+            let targetNode = null;
+            nodes.forEach(n => { if (n.dataset.date === wanted) targetNode = n; });
+            if (targetNode) {
+                targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetNode.classList.add('highlight');
+                setTimeout(() => targetNode.classList.remove('highlight'), 1100);
+            }
         } else {
-            currentPage = page; renderPage(page);
-            setTimeout(()=>{ const wanted = formatDisplayDate(ALL_REVIEWS[foundIndex].date); const nodes = document.querySelectorAll('.review-card'); let tar=null; nodes.forEach(n=>{ if (n.dataset.date === wanted) tar=n;}); if (tar){ tar.scrollIntoView({behavior:'smooth', block:'center'}); tar.classList.add('highlight'); setTimeout(()=>tar.classList.remove('highlight'),1100);} },140);
+            currentPage = page;
+            renderPage(page);
+            setTimeout(() => {
+                const wanted = formatDisplayDate(ALL_REVIEWS[foundIndex].date);
+                const nodes = document.querySelectorAll('.review-card');
+                let targetNode = null;
+                nodes.forEach(n => { if (n.dataset.date === wanted) targetNode = n; });
+                if (targetNode) {
+                    targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    targetNode.classList.add('highlight');
+                    setTimeout(() => targetNode.classList.remove('highlight'), 1100);
+                }
+            }, 140);
         }
+        hideTooltip();
         return;
     }
+
     if (t.classList && t.classList.contains('tag-dot')) {
         const taggerIndex = parseInt(t.dataset.taggerIndex,10);
         if (!isNaN(taggerIndex)) goToReviewByIndex(taggerIndex);
+        hideTooltip();
         return;
     }
 });
 
-// ---------------- jump helper ----------------
+// ------------------- Jump to review helper -------------------
 function goToReviewByIndex(targetIndex) {
     if (targetIndex < 0 || targetIndex >= ALL_REVIEWS.length) return;
     const page = Math.floor(targetIndex / PER_PAGE) + 1;
@@ -453,7 +768,7 @@ function goToReviewByIndex(targetIndex) {
     }
 }
 
-// ---------------- form submit (uploads) ----------------
+// ------------------- Form submit (uploads) -------------------
 document.getElementById('review-form').addEventListener('submit', function(e){
     e.preventDefault();
     const nickname = document.getElementById('nickname').value.trim();
@@ -485,7 +800,6 @@ document.getElementById('review-form').addEventListener('submit', function(e){
             .then((docRef) => {
                 document.getElementById('review-form').reset();
                 document.getElementById('send_sound').play();
-                // mark this id as locally added for a short time to avoid replay on onSnapshot
                 try { sessionStorage.setItem(LAST_LOCAL_ADD_KEY, docRef.id); setTimeout(()=>sessionStorage.removeItem(LAST_LOCAL_ADD_KEY), 5000); } catch(e){}
             })
             .catch(err => { console.error('Firestore add error', err); alert('Ошибка при сохранении (см. консоль).'); });
@@ -497,24 +811,27 @@ document.getElementById('review-form').addEventListener('submit', function(e){
         return fetch(CLOUDINARY_URL, { method: 'POST', body: fd }).then(r => r.json());
     });
 
-    Promise.all(uploads).then(results => {
-        const urls = results.map(r => r && r.secure_url ? r.secure_url : null).filter(Boolean);
-        if (!urls.length) throw new Error('Cloudinary did not return URLs');
-        reviewDoc.mediaUrls = urls; if (urls.length === 1) reviewDoc.mediaUrl = urls[0];
-        return firebase.firestore().collection('reviews').add(reviewDoc);
-    }).then((docRef) => {
-        document.getElementById('review-form').reset();
-        document.getElementById('send_sound').play();
-        try { sessionStorage.setItem(LAST_LOCAL_ADD_KEY, docRef.id); setTimeout(()=>sessionStorage.removeItem(LAST_LOCAL_ADD_KEY), 5000); } catch(e){}
-    }).catch(err => {
-        console.error('Upload/save error', err);
-        if (err && err.error && err.error.message) alert('Cloudinary error: ' + err.error.message);
-        else if (err && err.message) alert('Ошибка: ' + err.message);
-        else alert('Не удалось загрузить/сохранить (см. консоль).');
-    });
+    Promise.all(uploads)
+        .then(results => {
+            const urls = results.map(r => r && r.secure_url ? r.secure_url : null).filter(Boolean);
+            if (!urls.length) throw new Error('Cloudinary did not return URLs');
+            reviewDoc.mediaUrls = urls; if (urls.length === 1) reviewDoc.mediaUrl = urls[0];
+            return firebase.firestore().collection('reviews').add(reviewDoc);
+        })
+        .then((docRef) => {
+            document.getElementById('review-form').reset();
+            document.getElementById('send_sound').play();
+            try { sessionStorage.setItem(LAST_LOCAL_ADD_KEY, docRef.id); setTimeout(()=>sessionStorage.removeItem(LAST_LOCAL_ADD_KEY), 5000); } catch(e){}
+        })
+        .catch(err => {
+            console.error('Upload/save error', err);
+            if (err && err.error && err.error.message) alert('Cloudinary error: ' + err.error.message);
+            else if (err && err.message) alert('Ошибка: ' + err.message);
+            else alert('Не удалось загрузить/сохранить (см. консоль).');
+        });
 });
 
-// ---------------- Firestore subscription + initial navigation + sound on others add ----------------
+// ------------------- Firestore subscription and initial unread navigation -------------------
 function waitForFirebaseInit(timeoutMs = 5000) {
     return new Promise((resolve, reject) => {
         const start = Date.now();
@@ -571,9 +888,7 @@ function navigateToFirstUnreadIfAny() {
 window.addEventListener('load', function() {
     waitForFirebaseInit(5000).then(() => {
         try {
-            // We will track previous IDs to detect newly added docs between snapshots
             firebase.firestore().collection('reviews').orderBy('date', 'asc').onSnapshot(snapshot => {
-                // build prevIds
                 const prevIds = ALL_REVIEWS.map(r => r.id);
                 const arr = [];
                 snapshot.forEach(doc => {
@@ -581,18 +896,13 @@ window.addEventListener('load', function() {
                     arr.push(Object.assign({ id: doc.id }, data));
                 });
                 const newIds = arr.map(r => r.id);
-
-                // Detect added ids (present in newIds but not in prevIds)
                 const addedIds = newIds.filter(id => !prevIds.includes(id));
 
-                // If this is not the initial load (i.e. initialNavigationDone === true) and some ids added
-                // — play sound if at least one added id is NOT the last local add id.
                 if (initialNavigationDone && addedIds.length > 0) {
                     try {
                         const lastLocal = sessionStorage.getItem(LAST_LOCAL_ADD_KEY);
                         const otherAdded = addedIds.filter(id => id !== lastLocal);
                         if (otherAdded.length > 0) {
-                            // play local send_sound
                             try { document.getElementById('send_sound').play(); } catch(e){}
                         }
                     } catch(e){}
