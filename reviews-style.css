@@ -1,5 +1,3 @@
-/* === существующие стили (оставлены как у тебя) === */
-
 #reviews-container {
     max-width: 600px;
     margin: 20px auto;
@@ -90,7 +88,7 @@
 /* подсказка для бейджа */
 .new-badge[title] { cursor: default; }
 
-/* tooltip wrapper (уже был) */
+/* tooltip wrapper */
 .tag-tooltip {
     position: fixed;
     z-index: 11000;
@@ -107,9 +105,9 @@
     pointer-events: none;
     white-space: pre-wrap;
     word-break: break-word;
+}
 .tag-tooltip .tt-name { font-weight: 700; margin-bottom: 6px; }
 .tag-tooltip .tt-text { white-space: pre-wrap; }
-}
 
 /* форма */
 #review-form input, #review-form textarea {

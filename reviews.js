@@ -1,5 +1,3 @@
-// reviews.js — полный файл с исправленным tooltip (ник + текст), автоматическим помечанием просмотренных отзывов,
-// звуком при чужих добавлениях и прежней функциональностью (lightbox, embeds, pagination, tags).
 
 const PER_PAGE = 30;
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dp0smiea6/auto/upload';
@@ -129,7 +127,10 @@ function openLightboxEmbed(embedUrl) {
     overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
     overlay.addEventListener('click', function(){ closeLightbox(); });
     const iframe = document.createElement('iframe'); iframe.src = embedUrl;
-    iframe.setAttribute('allow','autoplay; encrypted-media; fullscreen'); iframe.style.width='90%'; iframe.style.height='80%'; iframe.frameBorder='0';
+    iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
+    iframe.setAttribute('allowfullscreen','');
+    iframe.setAttribute('referrerpolicy','no-referrer');
+    iframe.style.width='90%'; iframe.style.height='80%'; iframe.frameBorder='0';
     iframe.addEventListener('click', e => e.stopPropagation());
     overlay.appendChild(iframe); document.body.appendChild(overlay);
 }
@@ -140,39 +141,62 @@ function parseExternalEmbed(urlStr) {
         const u = new URL(urlStr);
         const host = u.hostname.replace(/^www\./i,'').toLowerCase();
 
-        // YouTube
+        // YouTube (handles youtu.be, watch?v=, /embed/, /shorts/)
         if (host === 'youtu.be' || host.indexOf('youtube.com') !== -1 || host === 'youtube-nocookie.com') {
             let vid = null;
-            if (host === 'youtu.be') vid = u.pathname.slice(1);
-            else vid = u.searchParams.get('v') || (u.pathname.match(/\/(embed|shorts)\/([^/]+)/) || [])[2];
+            if (host === 'youtu.be') {
+                vid = u.pathname.slice(1);
+            } else {
+                vid = u.searchParams.get('v') || (u.pathname.match(/\/(embed|shorts)\/([^/]+)/) || [])[2];
+            }
             if (vid) {
+                // previewEmbedUrl: standard embed (not autoplay), lightbox plays with autoplay
+                const previewEmbedUrl = 'https://www.youtube.com/embed/' + encodeURIComponent(vid) + '?rel=0&modestbranding=1';
+                const lightboxEmbedUrl = 'https://www.youtube.com/embed/' + encodeURIComponent(vid) + '?autoplay=1';
                 return {
                     provider: 'youtube',
-                    previewEmbedUrl: 'https://www.youtube.com/embed/' + vid + '?rel=0',
-                    lightboxEmbedUrl: 'https://www.youtube.com/embed/' + vid + '?autoplay=1'
+                    previewEmbedUrl: previewEmbedUrl,
+                    lightboxEmbedUrl: lightboxEmbedUrl,
+                    embedPossible: true
                 };
             }
         }
 
-        // Twitch
+        // Twitch (clips and channels)
         if (host.indexOf('twitch.tv') !== -1 || host === 'clips.twitch.tv') {
             const pathParts = u.pathname.split('/').filter(Boolean);
             const parent = window.location.hostname;
+            // detect if running locally/file:// — Twitch requires a real parent
             const forbiddenLocal = (parent === 'localhost' || parent === '127.0.0.1' || parent.indexOf('192.168.') === 0 || parent === '');
             if (host === 'clips.twitch.tv' && pathParts.length >=1) {
                 const slug = pathParts[0];
                 if (forbiddenLocal) return { provider:'twitch', embedPossible:false, url:urlStr };
-                return { provider:'twitch', previewEmbedUrl:'https://clips.twitch.tv/embed?clip='+slug+'&parent='+parent, lightboxEmbedUrl:'https://clips.twitch.tv/embed?clip='+slug+'&autoplay=true&parent='+parent, embedPossible:true };
+                return {
+                    provider:'twitch',
+                    previewEmbedUrl:'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&parent=' + encodeURIComponent(parent),
+                    lightboxEmbedUrl:'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&autoplay=true&parent=' + encodeURIComponent(parent),
+                    embedPossible:true
+                };
             }
             if (pathParts[0] === 'clips' && pathParts[1]) {
                 const slug = pathParts[1];
                 if (forbiddenLocal) return { provider:'twitch', embedPossible:false, url:urlStr };
-                return { provider:'twitch', previewEmbedUrl:'https://clips.twitch.tv/embed?clip='+slug+'&parent='+parent, lightboxEmbedUrl:'https://clips.twitch.tv/embed?clip='+slug+'&autoplay=true&parent='+parent, embedPossible:true };
+                return {
+                    provider:'twitch',
+                    previewEmbedUrl:'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&parent=' + encodeURIComponent(parent),
+                    lightboxEmbedUrl:'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&autoplay=true&parent=' + encodeURIComponent(parent),
+                    embedPossible:true
+                };
             }
             if (pathParts.length >= 1) {
                 const channel = pathParts[0];
                 if (forbiddenLocal) return { provider:'twitch', embedPossible:false, url:urlStr };
-                return { provider:'twitch', previewEmbedUrl:'https://player.twitch.tv/?channel='+channel+'&parent='+parent+'&muted=true', lightboxEmbedUrl:'https://player.twitch.tv/?channel='+channel+'&parent='+parent+'&autoplay=true', embedPossible:true };
+                return {
+                    provider:'twitch',
+                    previewEmbedUrl:'https://player.twitch.tv/?channel=' + encodeURIComponent(channel) + '&parent=' + encodeURIComponent(parent) + '&muted=true',
+                    lightboxEmbedUrl:'https://player.twitch.tv/?channel=' + encodeURIComponent(channel) + '&parent=' + encodeURIComponent(parent) + '&autoplay=true',
+                    embedPossible:true
+                };
             }
         }
     } catch(e){}
@@ -276,8 +300,20 @@ function createReviewNode(review, globalIndex) {
     if (Array.isArray(review.mediaUrls) && review.mediaUrls.length) urls = review.mediaUrls.slice(0,2);
     else if (review.mediaUrl) urls = [review.mediaUrl];
 
-    urls.forEach(u => {
-        if (!u) return;
+    // also detect inline links to youtube/twitch inside text and include them (but do not duplicate)
+    try {
+        const inlineLinks = (review.reviewText || '').match(/https?:\/\/[^\s<>"']+/g) || [];
+        inlineLinks.forEach(l => {
+            if (urls.length >= 2) return;
+            if (urls.indexOf(l) === -1) {
+                const emb = parseExternalEmbed(l);
+                if (emb) urls.push(l);
+            }
+        });
+    } catch(e){}
+
+    for (let i=0;i<Math.min(2, urls.length); i++){
+        const u = urls[i]; if (!u) continue;
         const low = u.toLowerCase();
 
         // image
@@ -302,7 +338,7 @@ function createReviewNode(review, globalIndex) {
                 }
             });
             mediaContainer.appendChild(img);
-            return;
+            continue;
         }
 
         // audio mp3
@@ -312,7 +348,7 @@ function createReviewNode(review, globalIndex) {
             audio.src = u;
             audio.style.marginTop = '10px';
             mediaContainer.appendChild(audio);
-            return;
+            continue;
         }
 
         // local video (mp4, webm, mov)
@@ -344,7 +380,7 @@ function createReviewNode(review, globalIndex) {
             });
 
             mediaContainer.appendChild(vid);
-            return;
+            continue;
         }
 
         // external embed (YouTube/Twitch)
@@ -354,26 +390,34 @@ function createReviewNode(review, globalIndex) {
                 const a = document.createElement('a'); a.href = u; a.className='twitch-fallback'; a.textContent = 'Открыть в Twitch'; a.target='_blank'; a.rel='noopener noreferrer';
                 mediaContainer.appendChild(a);
             } else {
-                const iframe = document.createElement('iframe'); iframe.src = emb.previewEmbedUrl || emb.lightboxEmbedUrl || u;
-                iframe.className = 'embed-preview'; iframe.setAttribute('frameborder','0'); iframe.setAttribute('allow','encrypted-media; fullscreen');
+                // create iframe with correct attributes so previews show
+                const iframe = document.createElement('iframe');
+                // prefer previewEmbedUrl (non-autoplay)
+                iframe.src = emb.previewEmbedUrl || emb.lightboxEmbedUrl || u;
+                iframe.className = 'embed-preview';
+                iframe.setAttribute('frameborder','0');
+                iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
+                iframe.setAttribute('allowfullscreen','');
+                iframe.setAttribute('referrerpolicy','no-referrer');
                 iframe.style.width = '320px';
                 iframe.style.height = '180px';
                 iframe.style.marginTop = '10px';
-
+                iframe.style.border = 'none';
+                // wrapper + overlay: overlay opens lightbox with autoplay embed (lightboxEmbedUrl)
                 const wrap = document.createElement('div'); wrap.style.display = 'inline-block'; wrap.style.position = 'relative';
                 wrap.appendChild(iframe);
                 const overlay = document.createElement('div'); overlay.style.position = 'absolute'; overlay.style.inset = '0'; overlay.style.cursor = 'pointer';
-                overlay.addEventListener('click', function(e){ e.stopPropagation(); const light = emb.lightboxEmbedUrl || emb.previewEmbedUrl; openLightboxEmbed(light); });
+                overlay.addEventListener('click', function(e){ e.stopPropagation(); const light = emb.lightboxEmbedUrl || emb.previewEmbedUrl || u; openLightboxEmbed(light); });
                 wrap.appendChild(overlay);
                 mediaContainer.appendChild(wrap);
             }
-            return;
+            continue;
         }
 
         // fallback link
         const a = document.createElement('a'); a.href = u; a.textContent = u; a.target = '_blank'; a.rel = 'noopener noreferrer';
         mediaContainer.appendChild(a);
-    });
+    }
 
     card.appendChild(header);
     card.appendChild(content);
