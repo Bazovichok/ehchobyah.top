@@ -1,90 +1,121 @@
-
-
-body {
-    font-family: Arial, sans-serif;    
-    background-image: url('background_light.png');    
-    background-color: white;
-    color: #333;
-    margin: 20px;
-    padding: 15px;  
-    background-size: cover;
-    
-
+/* базовые сбросы и удобства */
+* { box-sizing: border-box; }
+html, body {
+    height: 100%;
+    margin: 0;       /* критично: убираем margin у body, чтобы фон занимал весь экран корректно */
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Темный режим */
-body.dark-mode {
-    background-image: url('background_dark.png'); /* Путь к темной версии изображения */
-    background-color: black; /* Чёрный фон для темного режима */
-    color: white; /* Цвет текста для читаемости в темном режиме */
-}
-
-/* Стили для кнопки переключения */
-#dark-mode-toggle {
+/* --- фон --- */
+.bg {
     position: fixed;
-    top: 5px;
-    right: 3px;
-    background: none;
-    border: none;
-    font-size: 27px;
-    cursor: pointer;
-    color: #333; /* Цвет иконки в светлом режиме */
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+.bg img {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+    transition: opacity 260ms ease, transform 260ms ease;
+    transform-origin: center center;
+    --bg-scale: 1;               /* дефолтный масштаб */
+    transform: scale(var(--bg-scale));
 }
 
-body.dark-mode #dark-mode-toggle {
-    color: white; /* Цвет иконки в темном режиме */
-}
+/* чтобы уменьшить фон — например на 4% */
+.bg img.small { --bg-scale: 0.96; }
 
 
-h1 {
-    font-family: 'DynaPuff', sans-serif;
-    
-
-}
-
-header {
-    background-color: #58e067;
-    color: #431b4d;
+/* контейнер страницы — управление отступами */
+.container {
+    max-width: 1200px; /* разумная ширина для контента */
+    margin: 0 auto;
     padding: 20px;
-    verflow: hidden; /* Скрывает текст за пределами рамки */
+    min-height: 100vh;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
 
+/* header + marquee */
+header {
+    background-color: rgba(88,224,103,0.95);
+    color: #431b4d;
+    padding: 14px;
+    overflow: hidden; /* фикс: верная запись */
+    border-radius: 15px;
 }
 
 .marquee {
     width: 100%;
     overflow: hidden;
-    white-space: nowrap; /* Предотвращает перенос текста */
+    white-space: nowrap;
 }
-
 .marquee h1 {
     display: inline-block;
-    padding-left: 100%; /* Начинаем анимацию за пределами контейнера */
-    animation: marquee 10s linear infinite; /* Анимация длится 15 секунд, линейная, бесконечная */
+    padding-left: 100%;
+    margin: 0;
+    animation: marquee 12s linear infinite;
+    font-family: 'DynaPuff', sans-serif;
+    font-size: 1.1rem;
 }
-
 @keyframes marquee {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-100%);
-    }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
 }
 
+/* кнопка переключения темы */
+#dark-mode-toggle {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #333;
+    padding: 8px;
+    border-radius: 8px;
+    z-index: 20;
+    backdrop-filter: blur(6px);
+}
+#dark-mode-toggle:focus { outline: 2px solid rgba(88,224,103,0.6); }
 
+/* Навигация */
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+nav a {
+    text-decoration: none;
+    background: rgba(255,255,255,0.9);
+    color: #222;
+    padding: 8px 12px;
+    border-radius: 50px;
+    display:inline-block;
+}
+nav a:hover { background: rgba(88,224,103,0.95); color: #111; }
 
-button:hover {
-    background-color: #58e067;
+/* Тёмная тема */
+body.dark-mode .container { color: #eaeaea; }
+body.dark-mode header { background-color: rgba(15,15,15,0.85); color: #fff; }
+body.dark-mode nav a { background: rgba(0,0,0,0.45); color: #fff; }
+body.dark-mode #dark-mode-toggle { color: #fff; background: rgba(0,0,0,0.25); }
+
+/* Дополнительно: чуть уменьшить масштаб marquee на узких экранах */
+@media (max-width:600px) {
+    .marquee h1 { font-size: 0.95rem; animation-duration: 18s; }
+    nav ul { gap:8px; }
 }
 
-container {
-    max-width: 1920px; /*максимальную ширину */
-    margin: 0 auto; /* Центрирует контейнер на странице */
-    padding: 0 20px; /* Добавляет отступы слева и справа */
-}
-
-.dark-mode a, .dark-mode p {
-    color: white;
-}
-
-
+/* небольшая адаптация: чтобы контент не прилипал к углам */
+.container { padding-bottom: 40px; }

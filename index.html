@@ -1,48 +1,45 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>ehchobyah</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
- 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DynaPuff:wdth,wght@84.6,495&display=swap" rel="stylesheet">
 
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wdth,wght@84.6,495&display=swap" rel="stylesheet">
 </head>
 <body>
-       <div class="container">
-       <div class="marquee"> 
-    <header>
-        <h1>👄Добро пожаловать на O F F I C I É L страничку Ehchobyah в интернете👄</h1>  
-    
-    </header>
-         <button id="dark-mode-toggle"><i class="fas fa-moon"></i></button>
-     <main>
-        
-        
-    </main>
+    <!-- декоративный фон: <img> с object-fit для правильного масштабирования -->
+    <div class="bg" aria-hidden="true">
+        <img id="bg-img" src="background_light.png" alt="">
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="marquee">
+                <h1>👄Добро пожаловать на O F F I C I É L страничку Ehchobyah в интернете👄</h1>
+            </div>
+        </header>
+
+        <button id="dark-mode-toggle" aria-label="Переключить тёмную тему"><i class="fas fa-moon"></i></button>
+
+        <main>
+            <nav>
+                <ul>
+                    <li><a href="bitcoin.html">📊Курс Биткоина</a></li>
+                    <li><a href="reviews.html">💬Книга жалоб и предложений</a></li>
+                    <li><a href="news.html">👀Новости [beta 0.8]</a></li>
+                    <li><a href="page2.html">👨🏾‍🎨Галерея</a></li>
+                    <li><a href="mission.html">📋Наша миссия</a></li>
+                    <li><a href="___">👁Зал славы[soon]</a></li>
+                </ul>
+            </nav>
+        </main>
+    </div>
+
     <script src="script.js"></script>
-        </div>
 </body>
 </html>
-
-
-
-<nav>
-    <ul>
-               
-        <li><a href="bitcoin.html">📊Курс Биткоина</a></li>               
-        <li><a href="reviews.html">💬Книга жалоб и предложений</a></li>
-        <li><a href="news.html">👀Новости [beta 0.8]</a></li>        
-        <li><a href="page2.html">👨🏾‍🎨Галерея</a></li>
-        <li><a href="mission.html">📋Наша миссия</a></li>     
-
-    </ul>
-</nav>
-
-
-
