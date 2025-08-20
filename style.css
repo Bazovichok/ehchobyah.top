@@ -1,4 +1,4 @@
-/* style.css — полный файл с правкой: навигация сдвинута вправо (padding-left: 28px) */
+/* style.css — полный файл с улучшенными кнопками навигации */
 
 /* базовые сбросы и удобства */
 * { box-sizing: border-box; }
@@ -30,8 +30,6 @@ html, body {
     --bg-scale: 1;
     transform: scale(var(--bg-scale));
 }
-/* если хотите немного уменьшить фон — снимите комментарий и подберите значение */
-/* .bg img { --bg-scale: 0.96; } */
 
 /* контейнер страницы — управление отступами */
 .container {
@@ -78,7 +76,7 @@ header {
     border: 0;
     font-size: 22px;
     cursor: pointer;
-    color: #333;
+    color: #404040;
     padding: 8px;
     border-radius: 8px;
     z-index: 20;
@@ -88,9 +86,10 @@ header {
 
 /* ---------- НАВИГАЦИЯ ---------- */
 
+/* сдвиг всех кнопок вправо  */
 nav {
-    padding-left: 47px; /* <- сдвиг всех кнопок вправо*/
-    padding-right: 12px; /*небольшой правый отступ от границы */
+    padding-left: 33px; 
+    padding-right: 12px;
 }
 
 /* nav ul — базовое выравнивание элементов */
@@ -101,29 +100,104 @@ nav ul {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
-    justify-content: flex-start; 
+    justify-content: flex-start;
 }
+
+/* ------------------ Стили «кнопок» (nav links) ------------------ */
+
 nav a {
     text-decoration: none;
-    background: rgba(255,255,255,0.9);
-    color: #222;
-    padding: 8px 12px;
-    border-radius: 8px;
-    display: inline-block;
-}
-nav a:hover { background: rgba(88,224,103,0.95); color: #111; }
+    /* светло-серый, чуть прозрачный */
+    background: #f9f1f1;
+    color: #111;
+    padding: 10px 14px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(255,255,255,0.18);
 
-/* тёмная тема */
-body.dark-mode .container { color: #eaeaea; }
-body.dark-mode header { background-color: rgba(15,15,15,0.85); color: #fff; }
-body.dark-mode nav a { background: rgba(0,0,0,0.45); color: #fff; }
-body.dark-mode #dark-mode-toggle { color: #fff; background: rgba(0,0,0,0.25); }
+    /* blur фона (поддерживаем в браузерах, которые умеют) */
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+
+    /* тень и переходы */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+    transition:
+        transform 220ms cubic-bezier(.2,.8,.2,1),
+        box-shadow 220ms cubic-bezier(.2,.8,.2,1),
+        background 200ms,
+        color 200ms;
+    position: relative;
+    will-change: transform, box-shadow;
+    user-select: none;
+}
+
+/* Акцент при наведении: поднимается (translateY(-4px)), появляется glow и глубже тень */
+nav a:hover {
+    transform: translateY(-4px);
+    color: #081011;
+
+    /* основная тень плюс тонкий зелёный glow */
+    box-shadow:
+        0 18px 30px rgba(6,6,6,0.18),         /* большая мягкая тень под кнопкой */
+        0 0 18px rgba(88,224,103,0.14);       /* зелёный glow по периметру */
+}
+
+/* При фокусе — видимая обводка для доступности */
+nav a:focus {
+    outline: 3px solid rgba(88,224,103,0.18);
+    outline-offset: 3px;
+}
+
+/* При нажатии (чтобы было похоже на реальную кнопку) — слегка опускается */
+nav a:active {
+    transform: translateY(-1px);
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.18),
+        0 0 10px rgba(88,224,103,0.10);
+}
+
+/* Небольшой эффект "выезда вниз" при наведении на псевдоэлемент
+   — создаёт ощущение, что кнопка слегка выступает наружу */
+nav a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    transition: transform 220ms cubic-bezier(.2,.8,.2,1), opacity 220ms;
+    transform: translateY(0);
+    opacity: 0;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+nav a:hover::after {
+    transform: translateY(3px); /* "выезжает" вниз */
+    opacity: 1;
+}
+
+/* Тёмная тема: кнопки делают чуть темнее и прозрачнее, сохраняя blur */
+body.dark-mode nav a {
+    background: rgba(30,30,30,0.45);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.40);
+}
+body.dark-mode nav a:hover {
+    box-shadow:
+        0 18px 30px rgba(0,0,0,0.45),
+        0 0 18px rgba(88,224,103,0.10);
+}
+
+/* twitch/fallback и другие элементы — оставляем прежний стиль */
+nav a.twitch-fallback { background: rgba(40,40,40,0.9); color: #fff; }
 
 /* адаптивность */
 @media (max-width: 600px) {
     .marquee h1 { font-size: 0.95rem; animation-duration: 18s; }
     nav ul { gap: 8px; }
-    nav { padding-left: 10px; padding-right: 8px; } /* чуть меньше сдвиг на мобильных */
+    nav { padding-left: 10px; padding-right: 8px; }
+    nav a { padding: 8px 10px; font-size: 14px; border-radius: 8px; }
 }
 
 /* небольшая адаптация: чтобы контент не прилипал к углам */
