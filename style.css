@@ -1,4 +1,4 @@
-/* style.css — полный файл с улучшенными кнопками навигации */
+/* style.css — полный файл с минимальными правками (inner white text glow + thicker theme-toggle border) */
 
 /* базовые сбросы и удобства */
 * { box-sizing: border-box; }
@@ -73,7 +73,8 @@ header {
     top: 12px;
     right: 12px;
     background: rgba(255,255,255,0.06);
-    border: 0;
+    /* теперь толстая чёрная обводка в дневном режиме */
+    border: 2px solid rgba(0,0,0,0.85);
     font-size: 22px;
     cursor: pointer;
     color: #404040;
@@ -81,8 +82,16 @@ header {
     border-radius: 8px;
     z-index: 20;
     backdrop-filter: blur(6px);
+    transition: border-color 180ms ease, background 180ms ease, color 160ms;
 }
 #dark-mode-toggle:focus { outline: 2px solid rgba(88,224,103,0.6); }
+
+/* В тёмном режиме — толстая зелёная обводка */
+body.dark-mode #dark-mode-toggle {
+    border: 2px solid rgba(88,224,103,0.95);
+    background: rgba(255,255,255,0.02);
+    color: #e8f9ee;
+}
 
 /* ---------- НАВИГАЦИЯ ---------- */
 
@@ -108,7 +117,7 @@ nav ul {
 nav a {
     text-decoration: none;
     /* светло-серый, чуть прозрачный */
-    background: #f9f1f1;
+    background: #faefef;
     color: #111;
     padding: 10px 14px;
     border-radius: 10px;
@@ -127,13 +136,15 @@ nav a {
         transform 220ms cubic-bezier(.2,.8,.2,1),
         box-shadow 220ms cubic-bezier(.2,.8,.2,1),
         background 200ms,
-        color 200ms;
+        color 200ms,
+        text-shadow 180ms;
     position: relative;
     will-change: transform, box-shadow;
     user-select: none;
 }
 
-/* Акцент при наведении: поднимается (translateY(-4px)), появляется glow и глубже тень */
+/* Акцент при наведении: поднимается (translateY(-4px)), появляется glow и глубже тень.
+   Добавлено мягкое белое свечение текста (нечёткий glow). */
 nav a:hover {
     transform: translateY(-4px);
     color: #081011;
@@ -142,6 +153,11 @@ nav a:hover {
     box-shadow:
         0 18px 30px rgba(6,6,6,0.18),         /* большая мягкая тень под кнопкой */
         0 0 18px rgba(88,224,103,0.14);       /* зелёный glow по периметру */
+
+    /* НЕЧЁТКОЕ БЕЛОЕ СВЕЧЕНИЕ ТЕКСТА */
+    text-shadow:
+        0 0 8px rgba(255,255,255,0.55),   /* основное мягкое подсвечивание */
+        0 0 18px rgba(255,255,255,0.18);  /* более широкое рассеянное свечение */
 }
 
 /* При фокусе — видимая обводка для доступности */
@@ -187,6 +203,11 @@ body.dark-mode nav a:hover {
     box-shadow:
         0 18px 30px rgba(0,0,0,0.45),
         0 0 18px rgba(88,224,103,0.10);
+
+    /* в dark-mode — немного мягче белое свечение */
+    text-shadow:
+        0 0 6px rgba(255,255,255,0.50),
+        0 0 12px rgba(255,255,255,0.08);
 }
 
 /* twitch/fallback и другие элементы — оставляем прежний стиль */
