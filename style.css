@@ -1,225 +1,147 @@
-/* style.css — полный файл с минимальными правками (inner white text glow + thicker theme-toggle border) */
+/* style.css (v6) — фон: анимированный градиент + подложка-картинка с блюром
+   Исправление: уравнял размеры nav-кнопок (белый режим -> как в тёмном режиме). */
 
-/* базовые сбросы и удобства */
+/* базовые сбросы */
 * { box-sizing: border-box; }
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    font-family: Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-family: Arial, sans-serif;
+    transition: background 0.6s ease, color 0.6s ease;
 }
 
-/* фоновой слой — фиксированный под контентом */
+/* ---------------------- ФОН ---------------------- */
 .bg {
     position: fixed;
     inset: 0;
     z-index: -1;
     overflow: hidden;
-    pointer-events: none;
-}
-.bg img {
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
-    object-position: center center;
-    display: block;
-    transition: opacity 260ms ease, transform 260ms ease;
-    transform-origin: center center;
-    --bg-scale: 1;
-    transform: scale(var(--bg-scale));
 }
 
-/* контейнер страницы — управление отступами */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    min-height: 100vh;
-    color: #333;
-}
-
-/* header + marquee */
-header {
-    background-color: rgba(88,224,103,0.95);
-    color: #431b4d;
-    padding: 14px;
-    overflow: hidden;
-    border-radius: 10px;
-}
-
-.marquee {
+/* подложка-изображение */
+.bg-img {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(8px) brightness(0.8);
+    opacity: 0;
+    transition: opacity 0.8s ease;
 }
-.marquee h1 {
-    display: inline-block;
-    padding-left: 100%;
-    margin: 0;
-    animation: marquee 10s linear infinite;
-    font-family: 'DynaPuff', sans-serif;
-    font-size: 1.1rem;
+.bg-img.light { opacity: 1; }
+body.dark-mode .bg-img.light { opacity: 0; }
+body.dark-mode .bg-img.dark { opacity: 1; }
+
+/* переливающийся градиент поверх */
+.bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(-45deg, #e6fae6, #e5f5f3, #e3f8ea, #dbe6e6);
+    background-size: 400% 400%;
+    animation: gradientFlow 15s ease infinite;
+    mix-blend-mode: overlay;
+    opacity: 0.85;
+    transition: background 0.8s ease, opacity 0.8s ease;
 }
-@keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
+body.dark-mode .bg-overlay {
+    background: linear-gradient(-45deg, #0a0a0a, #151515, #202020, #1a1a1a);
+    background-size: 400% 400%;
+    animation: gradientFlow 20s ease infinite;
+    mix-blend-mode: normal;
+    opacity: 0.9;
 }
 
-/* кнопка переключения темы */
-#dark-mode-toggle {
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    background: rgba(255,255,255,0.06);
-    /* теперь толстая чёрная обводка в дневном режиме */
-    border: 2px solid rgba(0,0,0,0.85);
-    font-size: 22px;
-    cursor: pointer;
-    color: #404040;
-    padding: 8px;
-    border-radius: 8px;
-    z-index: 20;
-    backdrop-filter: blur(6px);
-    transition: border-color 180ms ease, background 180ms ease, color 160ms;
+/* анимация перелива */
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
-#dark-mode-toggle:focus { outline: 2px solid rgba(88,224,103,0.6); }
 
-/* В тёмном режиме — толстая зелёная обводка */
-body.dark-mode #dark-mode-toggle {
-    border: 2px solid rgba(88,224,103,0.95);
-    background: rgba(255,255,255,0.02);
-    color: #e8f9ee;
-}
+/* ---------------------- остальное ---------------------- */
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; min-height: 100vh; color: #333; }
+header { background-color: rgba(88,224,103,0.95); color: #431b4d; padding: 15px; border-radius: 12px; overflow: hidden; transition: all 0.23s ease; }
+.marquee { width:100%; overflow:hidden; white-space:nowrap; }
+.marquee h1 { display:inline-block; padding-left:100%; margin:0; animation:marquee 10s linear infinite; font-family:'DynaPuff',sans-serif; font-size:1.1rem; }
+@keyframes marquee { 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
+
+#dark-mode-toggle { position:fixed; top:12px; right:12px; background:rgba(255,255,255,0.06); border:2px solid rgba(0,0,0,0.85); font-size:22px; cursor:pointer; color:#404040; padding:8px; border-radius:8px; z-index:20; backdrop-filter:blur(6px); transition:all 0.25s ease; }
+body.dark-mode #dark-mode-toggle { border:2px solid rgba(88,224,103,0.95); background:rgba(15,20,15,0.4); color:#e8f9ee; box-shadow:0 0 15px rgba(88,224,103,0.4); }
+body.dark-mode #dark-mode-toggle:hover { box-shadow:0 0 20px rgba(88,224,103,0.7), 0 0 22px rgba(88,224,103,0.4); }
 
 /* ---------- НАВИГАЦИЯ ---------- */
 
-/* сдвиг всех кнопок вправо  */
-nav {
-    padding-left: 33px; 
-    padding-right: 12px;
-}
+nav { padding-left:38px; padding-right:10px; }
+nav ul { list-style:none; padding:0; margin:16px 0 0 0; display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-start; }
 
-/* nav ul — базовое выравнивание элементов */
-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 16px 0 0 0;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-}
-
-/* ------------------ Стили «кнопок» (nav links) ------------------ */
-
+/* nav buttons — унифицированный базовый стиль */
 nav a {
-    text-decoration: none;
-    /* светло-серый, чуть прозрачный */
-    background: #faefef;
-    color: #111;
-    padding: 10px 14px;
-    border-radius: 10px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid rgba(255,255,255,0.18);
-
-    /* blur фона (поддерживаем в браузерах, которые умеют) */
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-
-    /* тень и переходы */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.10);
-    transition:
-        transform 220ms cubic-bezier(.2,.8,.2,1),
-        box-shadow 220ms cubic-bezier(.2,.8,.2,1),
-        background 200ms,
-        color 200ms,
-        text-shadow 180ms;
-    position: relative;
-    will-change: transform, box-shadow;
-    user-select: none;
+    box-sizing: border-box; /* важно: чтобы ширина/высота включала border */
+    text-decoration:none;
+    background:#faebf8;             /* сохраняем светлый фон в light-mode */
+    color:#111;
+    padding:8px 12px;               /* единый padding для обеих тем */
+    border-radius:10px;
+    line-height: 1;
+    min-height: 40px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    border:2px solid rgba(255,255,255,0.08); /* теперь 2px как в dark-mode */
+    -webkit-backdrop-filter:blur(10px);
+    backdrop-filter:blur(10px);
+    box-shadow:0 2px 6px rgba(0,0,0,0.10);
+    transition:all 0.10s ease;
+    position:relative;
+    user-select:none;
 }
 
-/* Акцент при наведении: поднимается (translateY(-4px)), появляется glow и глубже тень.
-   Добавлено мягкое белое свечение текста (нечёткий glow). */
+/* hover (сохраняем прежний визуал) */
 nav a:hover {
-    transform: translateY(-4px);
-    color: #081011;
-
-    /* основная тень плюс тонкий зелёный glow */
-    box-shadow:
-        0 18px 30px rgba(6,6,6,0.18),         /* большая мягкая тень под кнопкой */
-        0 0 18px rgba(88,224,103,0.14);       /* зелёный glow по периметру */
-
-    /* НЕЧЁТКОЕ БЕЛОЕ СВЕЧЕНИЕ ТЕКСТА */
-    text-shadow:
-        0 0 8px rgba(255,255,255,0.55),   /* основное мягкое подсвечивание */
-        0 0 18px rgba(255,255,255,0.18);  /* более широкое рассеянное свечение */
+    transform:translateY(-4px);
+    color:#081011;
+    box-shadow:0 15px 30px rgba(6,6,6,0.15), 0 0 15px rgba(255,255,255,0.25);
+    text-shadow:0 0 8px rgba(255,255,255,0.9), 0 0 16px rgba(255,255,255,0.7);
 }
 
-/* При фокусе — видимая обводка для доступности */
-nav a:focus {
-    outline: 3px solid rgba(88,224,103,0.18);
-    outline-offset: 3px;
-}
+/* фокус / активное состояние */
+nav a:focus { outline:3px solid rgba(88,224,103,0.18); outline-offset:3px; }
+nav a:active { transform:translateY(-1px); box-shadow:0 8px 18px rgba(0,0,0,0.18), 0 0 10px rgba(255,255,255,0.15); }
 
-/* При нажатии (чтобы было похоже на реальную кнопку) — слегка опускается */
-nav a:active {
-    transform: translateY(-1px);
-    box-shadow:
-        0 8px 18px rgba(0,0,0,0.18),
-        0 0 10px rgba(88,224,103,0.10);
-}
+nav a::after { content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; transition: transform 0.25s ease, opacity 0.25s ease; transform: translateY(0); opacity:0; box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+nav a:hover::after { transform: translateY(3px); opacity:1; }
 
-/* Небольшой эффект "выезда вниз" при наведении на псевдоэлемент
-   — создаёт ощущение, что кнопка слегка выступает наружу */
-nav a::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    transition: transform 220ms cubic-bezier(.2,.8,.2,1), opacity 220ms;
-    transform: translateY(0);
-    opacity: 0;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-}
-nav a:hover::after {
-    transform: translateY(3px); /* "выезжает" вниз */
-    opacity: 1;
-}
-
-/* Тёмная тема: кнопки делают чуть темнее и прозрачнее, сохраняя blur */
+/* dark mode nav buttons — теперь совпадают по размерам, только визуально темнее */
 body.dark-mode nav a {
-    background: rgba(30,30,30,0.45);
+    background: rgba(30,30,30,0.55);
     color: #fff;
-    border: 1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.40);
+    /* border оставляем совпадающим по толщине; цвет пересекается с фоновой гаммой */
+    border: 2px solid rgba(255,255,255,0.08);
+    box-shadow: none;
 }
 body.dark-mode nav a:hover {
-    box-shadow:
-        0 18px 30px rgba(0,0,0,0.45),
-        0 0 18px rgba(88,224,103,0.10);
-
-    /* в dark-mode — немного мягче белое свечение */
-    text-shadow:
-        0 0 6px rgba(255,255,255,0.50),
-        0 0 12px rgba(255,255,255,0.08);
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 18px rgba(255,255,255,0.7);
+    box-shadow: 0 0 15px rgba(255,255,255,0.8), 0 0 26px rgba(255,255,255,0.5);
 }
 
-/* twitch/fallback и другие элементы — оставляем прежний стиль */
+/* dark mode header — лёгкая неоновая рамка */
+body.dark-mode header { border:0.3px solid rgba(88,224,103,0.75); box-shadow:0 0 16px rgba(88,224,103,0.5), 0 0 21px rgba(88,224,103,0.25); }
+
+/* twitch fallback */
 nav a.twitch-fallback { background: rgba(40,40,40,0.9); color: #fff; }
 
 /* адаптивность */
-@media (max-width: 600px) {
-    .marquee h1 { font-size: 0.95rem; animation-duration: 18s; }
-    nav ul { gap: 8px; }
-    nav { padding-left: 10px; padding-right: 8px; }
-    nav a { padding: 8px 10px; font-size: 14px; border-radius: 8px; }
+@media (max-width:600px){
+    .marquee h1{font-size:.95rem; animation-duration:18s;}
+    nav ul{gap:8px;}
+    nav{padding-left:10px;padding-right:8px;}
+    nav a{padding:8px 10px;font-size:14px;border-radius:8px;}
 }
 
-/* небольшая адаптация: чтобы контент не прилипал к углам */
+/* адаптация: чтобы контент не прилипал к углам */
 .container { padding-bottom: 40px; }

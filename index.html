@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>ehchobyah</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ehchobyah — Главная</title>
+
+    <link rel="stylesheet" href="style.css?v=6">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,19 +13,24 @@
     <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wdth,wght@84.6,495&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- декоративный фон: <img> с object-fit для правильного масштабирования -->
+    <!-- фоновый слой -->
     <div class="bg" aria-hidden="true">
-        <img id="bg-img" src="background_light.png" alt="">
+        <img class="bg-img light" src="background_light.png" alt="">
+        <img class="bg-img dark" src="background_dark.png" alt="">
+        <div class="bg-overlay"></div>
     </div>
 
     <div class="container">
         <header>
             <div class="marquee">
                 <h1>🥇Добро пожаловать на O F F I C I É L страничку GoldenGuy в интернете🥇</h1>
+                min-height: 40px;
             </div>
         </header>
 
-        <button id="dark-mode-toggle" aria-label="Переключить тёмную тему"><i class="fas fa-moon"></i></button>
+        <button id="dark-mode-toggle" aria-label="Переключить тёмную тему">
+            <i class="fas fa-moon"></i>
+        </button>
 
         <main>
             <nav>
@@ -40,6 +46,6 @@
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=6"></script>
 </body>
 </html>
