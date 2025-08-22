@@ -18,10 +18,11 @@
 /* header и content */
 .review-card .header-block,
 .review-card .content-block {
-    background-color: #bce0cb;
+    background-color: #e3dfe6;
     padding: 10px;
     border-radius: 6px;
     margin: 0;
+    
 }
 
 .review-card .header-block {
