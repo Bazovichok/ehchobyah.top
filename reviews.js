@@ -1,18 +1,99 @@
+// reviews.js — обновлён (фикс: двойной @, tag-dot, Twitch parent handling)
 
 const PER_PAGE = 30;
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dp0smiea6/auto/upload';
 const UPLOAD_PRESET = 'reviews_unsigned';
 
-let ALL_REVIEWS = []; // items: { id, nickname, reviewText, date, mediaUrl?, mediaUrls? }
+let ALL_REVIEWS = [];
 let currentPage = 1;
-let renderedSliceIds = []; // cached visible doc IDs
-let tagsMap = {}; // targetId -> array of { taggerId, taggerIndex }
-let initialNavigationDone = false; // ensure initial auto-jump happens once per page open
+let renderedSliceIds = [];
+let tagsMap = {};
+let initialNavigationDone = false;
 
-// IntersectionObserver to mark cards as read
 let cardObserver = null;
 const LAST_SEEN_KEY = 'eh_reviews_last_seen_v1';
 const LAST_LOCAL_ADD_KEY = 'eh_reviews_last_local_add';
+
+window.BG_USER_PAUSED = window.BG_USER_PAUSED || false;
+let _bgWasPlayingForMedia = false;
+
+// ------------------- Security helpers -------------------
+function isHttpUrl(u) {
+    try {
+        if (!u || typeof u !== 'string') return false;
+        const s = u.trim();
+        const parsed = new URL(s);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch (e) {
+        return false;
+    }
+}
+
+/**
+ * buildSafeContentNode:
+ * regexp теперь захватывает **без** символа @ в группах,
+ * чтобы data-target был без @ (как ожидает остальная логика).
+ */
+function buildSafeContentNode(text) {
+    const container = document.createElement('div');
+    container.className = 'content-block';
+
+    if (!text) {
+        container.appendChild(document.createTextNode(''));
+        return container;
+    }
+
+    // regex: захватываем без ведущего @ в группах 1/2
+    const regex = /@(\d{2}\.\d{2}\.\d{4},\s\d{2}:\d{2}:\d{2})|@(\d{2}:\d{2}:\d{2})|(https?:\/\/[^\s<>"'`]+)/g;
+    let lastIndex = 0;
+    let m;
+    while ((m = regex.exec(text)) !== null) {
+        const idx = m.index;
+        if (idx > lastIndex) {
+            const plain = text.slice(lastIndex, idx);
+            container.appendChild(document.createTextNode(plain));
+        }
+
+        if (m[1]) {
+            // full date captured WITHOUT @
+            const target = m[1];
+            const a = document.createElement('a');
+            a.href = '#';
+            a.className = 'tag-link';
+            a.dataset.target = target; // без @ — корректно для поиска
+            a.textContent = '@' + target;
+            container.appendChild(a);
+        } else if (m[2]) {
+            // time-only captured WITHOUT @
+            const target = m[2];
+            const a = document.createElement('a');
+            a.href = '#';
+            a.className = 'tag-link-time';
+            a.dataset.target = target;
+            a.textContent = '@' + target;
+            container.appendChild(a);
+        } else if (m[3]) {
+            const rawUrl = m[3];
+            if (isHttpUrl(rawUrl)) {
+                const a = document.createElement('a');
+                a.href = rawUrl;
+                a.textContent = rawUrl;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                container.appendChild(a);
+            } else {
+                container.appendChild(document.createTextNode(rawUrl));
+            }
+        }
+        lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+        container.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    return container;
+}
 
 // ------------------- Utilities -------------------
 function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
@@ -36,97 +117,109 @@ function dateFromReviewDateField(field){
     return null;
 }
 
-// ------------------- localStorage lastSeen helpers -------------------
-function getLastSeen() {
-    try {
-        const v = localStorage.getItem(LAST_SEEN_KEY);
-        if (!v) return null;
-        const d = new Date(v);
-        return isNaN(d.getTime()) ? null : d;
-    } catch(e) { return null; }
-}
-function setLastSeen(dateOrNow) {
-    try {
-        const d = dateOrNow instanceof Date ? dateOrNow : new Date();
-        localStorage.setItem(LAST_SEEN_KEY, d.toISOString());
-    } catch(e){}
-}
-function updateLastSeenIfLater(candidateDate) {
-    if (!candidateDate || isNaN(candidateDate.getTime())) return;
-    const cur = getLastSeen();
-    if (!cur || candidateDate > cur) {
-        setLastSeen(candidateDate);
-        refreshNewBadges();
+// ------------------- Background music helpers -------------------
+function getBackgroundAudioEl() { return document.getElementById('background_music'); }
+
+function pauseBackgroundMusicIfPlayingRemember() {
+    const bg = getBackgroundAudioEl();
+    if (!bg) return;
+    if (!bg.paused) {
+        _bgWasPlayingForMedia = true;
+        try { bg.pause(); } catch(e){}
+    } else {
+        _bgWasPlayingForMedia = false;
     }
 }
 
+function resumeBackgroundMusicIfWasPlaying() {
+    const bg = getBackgroundAudioEl();
+    if (!bg) return;
+    if (_bgWasPlayingForMedia && !window.BG_USER_PAUSED) {
+        try { bg.play().then(()=>{ document.getElementById('toggle_music') && document.getElementById('toggle_music').classList.add('playing'); }).catch(()=>{}); } catch(e){}
+    }
+    _bgWasPlayingForMedia = false;
+}
+
+// ------------------- lastSeen helpers -------------------
+function getLastSeen() { try { const v = localStorage.getItem(LAST_SEEN_KEY); if (!v) return null; const d = new Date(v); return isNaN(d.getTime()) ? null : d; } catch(e) { return null; } }
+function setLastSeen(dateOrNow) { try { const d = dateOrNow instanceof Date ? dateOrNow : new Date(); localStorage.setItem(LAST_SEEN_KEY, d.toISOString()); } catch(e){} }
+function updateLastSeenIfLater(candidateDate) { if (!candidateDate || isNaN(candidateDate.getTime())) return; const cur = getLastSeen(); if (!cur || candidateDate > cur) { setLastSeen(candidateDate); refreshNewBadges(); } }
+
 // ------------------- Media / Lightbox -------------------
-function pauseAllMedia() {
+function pauseAllMedia(excludeBackground = true) {
     try {
+        const bg = getBackgroundAudioEl();
         document.querySelectorAll('audio, video').forEach(m => {
-            try { m.pause(); } catch(e) {}
+            try { if (excludeBackground && bg && m === bg) return; m.pause(); } catch(e) {}
         });
     } catch(e){}
 }
+
 function closeLightbox() {
     const ex = document.getElementById('image-lightbox');
     if (!ex) return;
     const v = ex.querySelector('video');
-    if (v) {
-        try { v.pause(); v.src = ''; v.load && v.load(); } catch(e) {}
-    }
+    if (v) { try { v.pause(); v.src = ''; v.load && v.load(); } catch(e) {} }
     const iframe = ex.querySelector('iframe');
-    if (iframe) {
-        try { iframe.src = 'about:blank'; } catch(e) {}
-    }
+    if (iframe) { try { iframe.src = 'about:blank'; } catch(e) {} }
+    const audioEl = ex.querySelector('audio');
+    if (audioEl) { try { audioEl.pause(); audioEl.src = ''; audioEl.load && audioEl.load(); } catch(e) {} }
     ex.remove();
+    resumeBackgroundMusicIfWasPlaying();
 }
 
 function openLightboxImage(src, originEl) {
-    pauseAllMedia();
+    // image/gif — не останавливаем bg-music
     closeLightbox();
     const overlay = document.createElement('div'); overlay.id = 'image-lightbox';
-    overlay.style.position='fixed'; overlay.style.inset='0';
-    overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center';
-    overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
+    overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.display='flex';
+    overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
     overlay.addEventListener('click', function(){
-        if (originEl instanceof HTMLElement) {
-            originEl.classList.add('blurred'); originEl.dataset.isBlurred='true';
-        }
+        if (originEl instanceof HTMLElement) { originEl.classList.add('blurred'); originEl.dataset.isBlurred='true'; }
         closeLightbox();
     });
-    const img = document.createElement('img'); img.src = src; img.style.maxWidth='95%'; img.style.maxHeight='95%';
+    const img = document.createElement('img');
+    if (isHttpUrl(src)) img.src = src;
+    img.style.maxWidth='95%'; img.style.maxHeight='95%';
     img.addEventListener('click', function(e){ e.stopPropagation(); if (originEl instanceof HTMLElement) { originEl.classList.add('blurred'); originEl.dataset.isBlurred='true'; } closeLightbox(); });
     overlay.appendChild(img);
     document.body.appendChild(overlay);
+
+    try {
+        const bg = getBackgroundAudioEl();
+        if (bg && bg.paused && !window.BG_USER_PAUSED) {
+            bg.play().then(()=>{ document.getElementById('toggle_music') && document.getElementById('toggle_music').classList.add('playing'); }).catch(()=>{});
+        }
+    } catch(e){}
 }
 
 function openLightboxVideo(src) {
-    pauseAllMedia();
+    // pause bg for videos
+    pauseBackgroundMusicIfPlayingRemember();
     closeLightbox();
-    const overlay = document.createElement('div'); overlay.id = 'image-lightbox';
-    overlay.style.position='fixed'; overlay.style.inset='0';
-    overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center';
-    overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
-    overlay.addEventListener('click', function(){ closeLightbox(); });
-    const video = document.createElement('video');
-    video.src = src;
-    video.controls = true;
-    video.autoplay = true;
-    video.style.maxWidth = '95%';
-    video.style.maxHeight = '95%';
-    video.addEventListener('click', function(e){ e.stopPropagation(); });
-    overlay.appendChild(video);
-    document.body.appendChild(overlay);
-}
-
-function openLightboxEmbed(embedUrl) {
-    pauseAllMedia(); closeLightbox();
     const overlay = document.createElement('div'); overlay.id = 'image-lightbox';
     overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.display='flex';
     overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
     overlay.addEventListener('click', function(){ closeLightbox(); });
-    const iframe = document.createElement('iframe'); iframe.src = embedUrl;
+    const video = document.createElement('video');
+    if (isHttpUrl(src)) video.src = src;
+    video.controls = true; video.autoplay = true; video.style.maxWidth = '95%'; video.style.maxHeight = '95%';
+    video.addEventListener('click', function(e){ e.stopPropagation(); });
+    video.addEventListener('ended', function(){ resumeBackgroundMusicIfWasPlaying(); });
+    video.addEventListener('pause', function(){ resumeBackgroundMusicIfWasPlaying(); });
+    overlay.appendChild(video); document.body.appendChild(overlay);
+}
+
+function openLightboxEmbed(embedUrl) {
+    // pause bg for embeds
+    pauseBackgroundMusicIfPlayingRemember();
+    closeLightbox();
+    const overlay = document.createElement('div'); overlay.id = 'image-lightbox';
+    overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.display='flex';
+    overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.background='rgba(0,0,0,0.45)'; overlay.style.zIndex='9999';
+    overlay.addEventListener('click', function(){ closeLightbox(); });
+    const iframe = document.createElement('iframe');
+    if (isHttpUrl(embedUrl)) iframe.src = embedUrl;
     iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
     iframe.setAttribute('allowfullscreen','');
     iframe.setAttribute('referrerpolicy','no-referrer');
@@ -141,62 +234,48 @@ function parseExternalEmbed(urlStr) {
         const u = new URL(urlStr);
         const host = u.hostname.replace(/^www\./i,'').toLowerCase();
 
-        // YouTube (handles youtu.be, watch?v=, /embed/, /shorts/)
+        // YouTube (same as before)
         if (host === 'youtu.be' || host.indexOf('youtube.com') !== -1 || host === 'youtube-nocookie.com') {
             let vid = null;
-            if (host === 'youtu.be') {
-                vid = u.pathname.slice(1);
-            } else {
-                vid = u.searchParams.get('v') || (u.pathname.match(/\/(embed|shorts)\/([^/]+)/) || [])[2];
-            }
+            if (host === 'youtu.be') vid = u.pathname.slice(1);
+            else vid = u.searchParams.get('v') || (u.pathname.match(/\/(embed|shorts)\/([^/]+)/) || [])[2];
             if (vid) {
-                // previewEmbedUrl: standard embed (not autoplay), lightbox plays with autoplay
                 const previewEmbedUrl = 'https://www.youtube.com/embed/' + encodeURIComponent(vid) + '?rel=0&modestbranding=1';
                 const lightboxEmbedUrl = 'https://www.youtube.com/embed/' + encodeURIComponent(vid) + '?autoplay=1';
-                return {
-                    provider: 'youtube',
-                    previewEmbedUrl: previewEmbedUrl,
-                    lightboxEmbedUrl: lightboxEmbedUrl,
-                    embedPossible: true
-                };
+                return { provider: 'youtube', previewEmbedUrl, lightboxEmbedUrl, embedPossible: true };
             }
         }
 
-        // Twitch (clips and channels)
+        // Twitch — IMPORTANT: embed requires parent query param to be a valid hostname
         if (host.indexOf('twitch.tv') !== -1 || host === 'clips.twitch.tv') {
             const pathParts = u.pathname.split('/').filter(Boolean);
-            const parent = window.location.hostname;
-            // detect if running locally/file:// — Twitch requires a real parent
-            const forbiddenLocal = (parent === 'localhost' || parent === '127.0.0.1' || parent.indexOf('192.168.') === 0 || parent === '');
+            const parent = window.location.hostname || '';
+            // if parent is blank or local, embedding will fail — do NOT return embed urls in that case
+            const forbiddenLocal = (parent === '' || parent === 'localhost' || parent === '127.0.0.1' || parent.indexOf('192.168.') === 0);
+            // handle clips / clips.twitch.tv
             if (host === 'clips.twitch.tv' && pathParts.length >=1) {
                 const slug = pathParts[0];
-                if (forbiddenLocal) return { provider:'twitch', embedPossible:false, url:urlStr };
-                return {
-                    provider:'twitch',
-                    previewEmbedUrl:'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&parent=' + encodeURIComponent(parent),
-                    lightboxEmbedUrl:'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&autoplay=true&parent=' + encodeURIComponent(parent),
-                    embedPossible:true
-                };
+                const previewEmbed = 'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&parent=' + encodeURIComponent(parent);
+                const lightbox = 'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&autoplay=true&parent=' + encodeURIComponent(parent);
+                if (forbiddenLocal) {
+                    // parent invalid — do not try to embed; return embedPossible:false so fallback link used
+                    return { provider:'twitch', embedPossible:false, url:urlStr };
+                }
+                return { provider:'twitch', previewEmbedUrl: previewEmbed, lightboxEmbedUrl: lightbox, embedPossible:true };
             }
             if (pathParts[0] === 'clips' && pathParts[1]) {
                 const slug = pathParts[1];
+                const previewEmbed = 'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&parent=' + encodeURIComponent(parent);
+                const lightbox = 'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&autoplay=true&parent=' + encodeURIComponent(parent);
                 if (forbiddenLocal) return { provider:'twitch', embedPossible:false, url:urlStr };
-                return {
-                    provider:'twitch',
-                    previewEmbedUrl:'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&parent=' + encodeURIComponent(parent),
-                    lightboxEmbedUrl:'https://clips.twitch.tv/embed?clip=' + encodeURIComponent(slug) + '&autoplay=true&parent=' + encodeURIComponent(parent),
-                    embedPossible:true
-                };
+                return { provider:'twitch', previewEmbedUrl: previewEmbed, lightboxEmbedUrl: lightbox, embedPossible:true };
             }
             if (pathParts.length >= 1) {
                 const channel = pathParts[0];
+                const previewEmbed = 'https://player.twitch.tv/?channel=' + encodeURIComponent(channel) + '&parent=' + encodeURIComponent(parent) + '&muted=true';
+                const lightbox = 'https://player.twitch.tv/?channel=' + encodeURIComponent(channel) + '&parent=' + encodeURIComponent(parent) + '&autoplay=true';
                 if (forbiddenLocal) return { provider:'twitch', embedPossible:false, url:urlStr };
-                return {
-                    provider:'twitch',
-                    previewEmbedUrl:'https://player.twitch.tv/?channel=' + encodeURIComponent(channel) + '&parent=' + encodeURIComponent(parent) + '&muted=true',
-                    lightboxEmbedUrl:'https://player.twitch.tv/?channel=' + encodeURIComponent(channel) + '&parent=' + encodeURIComponent(parent) + '&autoplay=true',
-                    embedPossible:true
-                };
+                return { provider:'twitch', previewEmbedUrl: previewEmbed, lightboxEmbedUrl: lightbox, embedPossible:true };
             }
         }
     } catch(e){}
@@ -214,7 +293,6 @@ function computeTagsMap() {
     for (let i=0;i<ALL_REVIEWS.length;i++){
         const r = ALL_REVIEWS[i];
         const text = r.reviewText || '';
-        // full datetime tags
         const fullRegex = /@(\d{2}\.\d{2}\.\d{4},\s\d{2}:\d{2}:\d{2})/g;
         let m;
         while ((m = fullRegex.exec(text)) !== null) {
@@ -226,7 +304,6 @@ function computeTagsMap() {
                 tagsMap[targetId].push({ taggerId: r.id || String(i), taggerIndex: i });
             }
         }
-        // time-only tags
         const timeRegex = /@(\d{2}:\d{2}:\d{2})/g;
         while ((m = timeRegex.exec(text)) !== null) {
             const wantedTime = m[1];
@@ -258,7 +335,17 @@ function buildTagIndicatorsForCard(cardEl, reviewIndex) {
     const targetId = review.id || String(reviewIndex);
     const arr = tagsMap[targetId] || [];
     for (let k=0;k<arr.length;k++){
-        const dot = document.createElement('span'); dot.className='tag-dot'; dot.title='Перейти к тегнувшему отзыву'; dot.dataset.taggerIndex = String(arr[k].taggerIndex); dot.textContent='•';
+        const dot = document.createElement('span'); dot.className='tag-dot'; dot.title='Перейти к тегнувшему отзыву';
+        dot.dataset.taggerIndex = String(arr[k].taggerIndex);
+        dot.textContent='•';
+        // явный обработчик клика
+        (function(ti){
+            dot.addEventListener('click', function(ev){
+                ev.stopPropagation();
+                const taggerIndex = parseInt(ti,10);
+                if (!isNaN(taggerIndex)) goToReviewByIndex(taggerIndex);
+            });
+        })(arr[k].taggerIndex);
         indicators.appendChild(dot);
     }
 }
@@ -272,42 +359,32 @@ function createReviewNode(review, globalIndex) {
     const displayDate = formatDisplayDate(review.date);
     card.dataset.date = displayDate;
 
-    // header
     const header = document.createElement('div'); header.className = 'header-block';
     const nick = document.createElement('span'); nick.className='nickname'; nick.textContent = review.nickname || 'Anonymous';
     header.appendChild(nick);
-    header.appendChild(document.createTextNode(' - '));
+    header.appendChild(document.createTextNode(' '));
     const dateSpan = document.createElement('span'); dateSpan.className='datetime'; dateSpan.textContent = displayDate;
     header.appendChild(dateSpan);
-    // placeholder for indicators (filled later)
     const indicators = document.createElement('span'); indicators.className = 'tag-indicators'; indicators.style.marginLeft='8px';
     header.appendChild(indicators);
 
-    // content
-    const content = document.createElement('div'); content.className = 'content-block';
-    content.innerHTML = escapeHtml(review.reviewText || '')
-        // full datetime tag format
-        .replace(/@(\d{2}\.\d{2}\.\d{4},\s\d{2}:\d{2}:\d{2})/g, (m,p1) => `<a href="#" class="tag-link" data-target="${escapeHtml(p1)}">@${escapeHtml(p1)}</a>`)
-        // time-only tag
-        .replace(/@(\d{2}:\d{2}:\d{2})/g, (m,p1) => `<a href="#" class="tag-link-time" data-target="${escapeHtml(p1)}">@${escapeHtml(p1)}</a>`);
+    const contentNode = buildSafeContentNode(review.reviewText || '');
 
-    // media container
     const mediaContainer = document.createElement('div');
     mediaContainer.className = 'media-container';
 
-    // collect urls
     let urls = [];
     if (Array.isArray(review.mediaUrls) && review.mediaUrls.length) urls = review.mediaUrls.slice(0,2);
     else if (review.mediaUrl) urls = [review.mediaUrl];
 
-    // also detect inline links to youtube/twitch inside text and include them (but do not duplicate)
     try {
-        const inlineLinks = (review.reviewText || '').match(/https?:\/\/[^\s<>"']+/g) || [];
+        const inlineLinks = (review.reviewText || '').match(/https?:\/\/[^\s<>"'`]+/g) || [];
         inlineLinks.forEach(l => {
             if (urls.length >= 2) return;
             if (urls.indexOf(l) === -1) {
                 const emb = parseExternalEmbed(l);
                 if (emb) urls.push(l);
+                else if (isHttpUrl(l) && urls.indexOf(l) === -1) urls.push(l);
             }
         });
     } catch(e){}
@@ -315,127 +392,93 @@ function createReviewNode(review, globalIndex) {
     for (let i=0;i<Math.min(2, urls.length); i++){
         const u = urls[i]; if (!u) continue;
         const low = u.toLowerCase();
+        if (!isHttpUrl(u)) continue;
 
-        // image
         if (/\.(jpe?g|png|gif)(\?.*)?$/.test(low)) {
             const img = document.createElement('img');
-            img.src = u;
-            img.classList.add('blurred');
-            img.dataset.isBlurred = 'true';
-            img.style.maxWidth = '200px';
-            img.style.maxHeight = '200px';
-            img.style.display = 'block';
-            img.style.marginTop = '10px';
-            img.style.cursor = 'pointer';
+            img.src = u; img.classList.add('blurred'); img.dataset.isBlurred = 'true';
+            img.style.maxWidth = '200px'; img.style.maxHeight = '200px'; img.style.display = 'block'; img.style.marginTop = '10px'; img.style.cursor = 'pointer';
             img.addEventListener('click', function() {
                 const isBlurred = img.dataset.isBlurred === 'true';
-                if (isBlurred) {
-                    img.classList.remove('blurred'); img.dataset.isBlurred = 'false';
-                    openLightboxImage(u, img);
-                } else {
-                    img.classList.add('blurred'); img.dataset.isBlurred = 'true';
-                    closeLightbox();
-                }
+                if (isBlurred) { img.classList.remove('blurred'); img.dataset.isBlurred = 'false'; openLightboxImage(u, img); }
+                else { img.classList.add('blurred'); img.dataset.isBlurred = 'true'; closeLightbox(); }
             });
             mediaContainer.appendChild(img);
             continue;
         }
 
-        // audio mp3
         if (/\.mp3(\?.*)?$/.test(low)) {
             const audio = document.createElement('audio');
-            audio.controls = true;
-            audio.src = u;
-            audio.style.marginTop = '10px';
+            audio.controls = true; audio.src = u; audio.style.marginTop = '10px';
+            audio.addEventListener('play', function(){ pauseBackgroundMusicIfPlayingRemember(); });
+            audio.addEventListener('pause', function(){ resumeBackgroundMusicIfWasPlaying(); });
+            audio.addEventListener('ended', function(){ resumeBackgroundMusicIfWasPlaying(); });
             mediaContainer.appendChild(audio);
             continue;
         }
 
-        // local video (mp4, webm, mov)
         if (/\.(mp4|webm|mov)(\?.*)?$/.test(low)) {
             const vid = document.createElement('video');
-            vid.src = u;
-            vid.classList.add('preview', 'blurred'); // preview class + blurred
-            vid.dataset.isBlurred = 'true';
-            vid.muted = true;
-            vid.controls = false;
-            vid.preload = 'metadata';
-            vid.style.maxWidth = '220px';
-            vid.style.maxHeight = '160px';
-            vid.style.display = 'block';
-            vid.style.marginTop = '10px';
-            vid.style.cursor = 'pointer';
-
+            vid.src = u; vid.classList.add('preview', 'blurred'); vid.dataset.isBlurred = 'true';
+            vid.muted = true; vid.controls = false; vid.preload = 'metadata';
+            vid.style.maxWidth = '220px'; vid.style.maxHeight = '160px'; vid.style.display = 'block'; vid.style.marginTop = '10px'; vid.style.cursor = 'pointer';
             vid.addEventListener('click', function(e) {
                 e.preventDefault();
                 const isBlurred = vid.dataset.isBlurred === 'true';
-                if (isBlurred) {
-                    vid.classList.remove('blurred'); vid.dataset.isBlurred = 'false';
-                    openLightboxVideo(u);
-                } else {
-                    vid.classList.add('blurred'); vid.dataset.isBlurred = 'true';
-                    closeLightbox();
-                    try { vid.pause(); vid.currentTime = 0; vid.muted = true; } catch(e){}
-                }
+                if (isBlurred) { vid.classList.remove('blurred'); vid.dataset.isBlurred = 'false'; openLightboxVideo(u); }
+                else { vid.classList.add('blurred'); vid.dataset.isBlurred = 'true'; closeLightbox(); try { vid.pause(); vid.currentTime = 0; vid.muted = true; } catch(e){} }
             });
-
+            vid.addEventListener('play', function(){ pauseBackgroundMusicIfPlayingRemember(); });
+            vid.addEventListener('pause', function(){ resumeBackgroundMusicIfWasPlaying(); });
+            vid.addEventListener('ended', function(){ resumeBackgroundMusicIfWasPlaying(); });
             mediaContainer.appendChild(vid);
             continue;
         }
 
-        // external embed (YouTube/Twitch)
         const emb = parseExternalEmbed(u);
         if (emb) {
-            if (emb.provider === 'twitch' && emb.embedPossible === false) {
-                const a = document.createElement('a'); a.href = u; a.className='twitch-fallback'; a.textContent = 'Открыть в Twitch'; a.target='_blank'; a.rel='noopener noreferrer';
-                mediaContainer.appendChild(a);
-            } else {
-                // create iframe with correct attributes so previews show
+            // embedPossible === true only when parent is valid (see parseExternalEmbed)
+            if (emb.embedPossible) {
                 const iframe = document.createElement('iframe');
-                // prefer previewEmbedUrl (non-autoplay)
                 iframe.src = emb.previewEmbedUrl || emb.lightboxEmbedUrl || u;
                 iframe.className = 'embed-preview';
                 iframe.setAttribute('frameborder','0');
                 iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen');
                 iframe.setAttribute('allowfullscreen','');
                 iframe.setAttribute('referrerpolicy','no-referrer');
-                iframe.style.width = '320px';
-                iframe.style.height = '180px';
-                iframe.style.marginTop = '10px';
-                iframe.style.border = 'none';
-                // wrapper + overlay: overlay opens lightbox with autoplay embed (lightboxEmbedUrl)
+                iframe.style.width = '320px'; iframe.style.height = '180px'; iframe.style.marginTop = '10px'; iframe.style.border = 'none';
                 const wrap = document.createElement('div'); wrap.style.display = 'inline-block'; wrap.style.position = 'relative';
                 wrap.appendChild(iframe);
                 const overlay = document.createElement('div'); overlay.style.position = 'absolute'; overlay.style.inset = '0'; overlay.style.cursor = 'pointer';
                 overlay.addEventListener('click', function(e){ e.stopPropagation(); const light = emb.lightboxEmbedUrl || emb.previewEmbedUrl || u; openLightboxEmbed(light); });
                 wrap.appendChild(overlay);
                 mediaContainer.appendChild(wrap);
+            } else {
+                // fallback: safe link
+                const a = document.createElement('a'); a.href = u; a.className='twitch-fallback'; a.textContent = 'Открыть в Twitch'; a.target='_blank'; a.rel='noopener noreferrer';
+                mediaContainer.appendChild(a);
             }
             continue;
         }
 
-        // fallback link
-        const a = document.createElement('a'); a.href = u; a.textContent = u; a.target = '_blank'; a.rel = 'noopener noreferrer';
-        mediaContainer.appendChild(a);
+        // fallback link (safe)
+        if (isHttpUrl(u)) {
+            const a = document.createElement('a'); a.href = u; a.textContent = u; a.target = '_blank'; a.rel = 'noopener noreferrer';
+            mediaContainer.appendChild(a);
+        }
     }
 
     card.appendChild(header);
-    card.appendChild(content);
+    card.appendChild(contentNode);
     if (mediaContainer.children.length) card.appendChild(mediaContainer);
 
     return card;
 }
 
-// Helper: compare arrays equality shallow
-function arraysEqual(a,b){
-    if (!a || !b) return false;
-    if (a.length !== b.length) return false;
-    for (let i=0;i<a.length;i++) if (a[i] !== b[i]) return false;
-    return true;
-}
+// Helper
+function arraysEqual(a,b){ if (!a || !b) return false; if (a.length !== b.length) return false; for (let i=0;i<a.length;i++) if (a[i] !== b[i]) return false; return true; }
 
-// ------------------- Tooltip for tag preview (reliable) -------------------
-// Single shared tooltip element
+// ------------------- Tooltip for tag preview -------------------
 let tagTooltipEl = null;
 let tooltipTargetEl = null;
 
@@ -444,7 +487,6 @@ function createTooltipEl() {
     tagTooltipEl = document.createElement('div');
     tagTooltipEl.className = 'tag-tooltip';
     tagTooltipEl.style.display = 'none';
-    // inner structure: name + text
     const name = document.createElement('div'); name.className = 'tt-name'; name.style.fontWeight = '700'; name.style.marginBottom = '6px';
     const text = document.createElement('div'); text.className = 'tt-text';
     tagTooltipEl.appendChild(name);
@@ -453,48 +495,11 @@ function createTooltipEl() {
     return tagTooltipEl;
 }
 
-function setTooltipContent(nick, txt) {
-    createTooltipEl();
-    const nameEl = tagTooltipEl.querySelector('.tt-name');
-    const textEl = tagTooltipEl.querySelector('.tt-text');
-    nameEl.textContent = nick || '(аноним)';
-    textEl.textContent = txt || '(пустой комментарий)';
-}
+function setTooltipContent(nick, txt) { createTooltipEl(); const nameEl = tagTooltipEl.querySelector('.tt-name'); const textEl = tagTooltipEl.querySelector('.tt-text'); nameEl.textContent = nick || '(аноним)'; textEl.textContent = txt || '(пустой комментарий)'; }
+function positionTooltip(x, y) { if (!tagTooltipEl) return; const pad = 12; tagTooltipEl.style.left = '0px'; tagTooltipEl.style.top = '0px'; const tw = tagTooltipEl.offsetWidth || 200; const th = tagTooltipEl.offsetHeight || 80; const vw = window.innerWidth; const vh = window.innerHeight; let left = x + 12; let top = y + 12; if (left + tw + pad > vw) left = Math.max(pad, x - tw - 12); if (top + th + pad > vh) top = Math.max(pad, y - th - 12); tagTooltipEl.style.left = left + 'px'; tagTooltipEl.style.top = top + 'px'; }
+function showTooltip(nick, text, clientX, clientY) { setTooltipContent(nick, text); tagTooltipEl.style.display = 'block'; requestAnimationFrame(() => positionTooltip(clientX, clientY)); }
+function hideTooltip() { if (!tagTooltipEl) return; tagTooltipEl.style.display = 'none'; tagTooltipEl.querySelector('.tt-name').textContent = ''; tagTooltipEl.querySelector('.tt-text').textContent = ''; tooltipTargetEl = null; }
 
-function positionTooltip(x, y) {
-    if (!tagTooltipEl) return;
-    const pad = 12;
-    // ensure it's visible to measure
-    tagTooltipEl.style.left = '0px';
-    tagTooltipEl.style.top = '0px';
-    const tw = tagTooltipEl.offsetWidth || 200;
-    const th = tagTooltipEl.offsetHeight || 80;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    let left = x + 12;
-    let top = y + 12;
-    if (left + tw + pad > vw) left = Math.max(pad, x - tw - 12);
-    if (top + th + pad > vh) top = Math.max(pad, y - th - 12);
-    tagTooltipEl.style.left = left + 'px';
-    tagTooltipEl.style.top = top + 'px';
-}
-
-function showTooltip(nick, text, clientX, clientY) {
-    setTooltipContent(nick, text);
-    tagTooltipEl.style.display = 'block';
-    requestAnimationFrame(() => positionTooltip(clientX, clientY));
-}
-
-function hideTooltip() {
-    if (!tagTooltipEl) return;
-    tagTooltipEl.style.display = 'none';
-    // clear content
-    tagTooltipEl.querySelector('.tt-name').textContent = '';
-    tagTooltipEl.querySelector('.tt-text').textContent = '';
-    tooltipTargetEl = null;
-}
-
-// Get review info (nick + text) for a tag element
 function getReviewInfoFromTagElement(tagEl) {
     if (!tagEl) return null;
     const isTimeOnly = tagEl.classList.contains('tag-link-time');
@@ -505,23 +510,18 @@ function getReviewInfoFromTagElement(tagEl) {
     if (!isTimeOnly) {
         for (let i=0;i<ALL_REVIEWS.length;i++){
             const d = formatDisplayDate(ALL_REVIEWS[i].date);
-            if (d === target) {
-                return { nick: ALL_REVIEWS[i].nickname || 'Anonymous', text: ALL_REVIEWS[i].reviewText || '' };
-            }
+            if (d === target) { return { nick: ALL_REVIEWS[i].nickname || 'Anonymous', text: ALL_REVIEWS[i].reviewText || '' }; }
         }
         return null;
     }
 
     for (let i=0;i<ALL_REVIEWS.length;i++){
         const d = formatDisplayDate(ALL_REVIEWS[i].date);
-        if (d.slice(-8) === target) {
-            return { nick: ALL_REVIEWS[i].nickname || 'Anonymous', text: ALL_REVIEWS[i].reviewText || '' };
-        }
+        if (d.slice(-8) === target) { return { nick: ALL_REVIEWS[i].nickname || 'Anonymous', text: ALL_REVIEWS[i].reviewText || '' }; }
     }
     return null;
 }
 
-// Delegated handlers to show/hide tooltip reliably
 document.addEventListener('mouseover', function(e){
     const tag = e.target.closest && e.target.closest('.tag-link, .tag-link-time');
     if (!tag) return;
@@ -534,22 +534,8 @@ document.addEventListener('mouseover', function(e){
     showTooltip(info.nick, short, e.clientX, e.clientY);
 });
 
-document.addEventListener('mousemove', function(e){
-    if (!tooltipTargetEl) return;
-    positionTooltip(e.clientX, e.clientY);
-});
-
-document.addEventListener('mouseout', function(e){
-    const tag = e.target.closest && e.target.closest('.tag-link, .tag-link-time');
-    if (!tag) return;
-    // if leaving the tag element to somewhere not inside it — hide
-    const related = e.relatedTarget;
-    if (!related || (related !== tag && !tag.contains(related))) {
-        hideTooltip();
-    }
-});
-
-// Hide tooltip on many global actions (click, scroll, page change)
+document.addEventListener('mousemove', function(e){ if (!tooltipTargetEl) return; positionTooltip(e.clientX, e.clientY); });
+document.addEventListener('mouseout', function(e){ const tag = e.target.closest && e.target.closest('.tag-link, .tag-link-time'); if (!tag) return; const related = e.relatedTarget; if (!related || (related !== tag && !tag.contains(related))) hideTooltip(); });
 document.addEventListener('click', function(){ hideTooltip(); });
 window.addEventListener('scroll', function(){ hideTooltip(); }, true);
 
@@ -575,9 +561,7 @@ function observeVisibleCards() {
     }
 
     const nodes = document.querySelectorAll('.review-card');
-    nodes.forEach(n => {
-        try { cardObserver.observe(n); } catch(e){}
-    });
+    nodes.forEach(n => { try { cardObserver.observe(n); } catch(e){} });
 }
 
 function updateVisibleTagIndicators(start, end) {
@@ -782,16 +766,10 @@ document.addEventListener('click', function(e){
         hideTooltip();
         return;
     }
-
-    if (t.classList && t.classList.contains('tag-dot')) {
-        const taggerIndex = parseInt(t.dataset.taggerIndex,10);
-        if (!isNaN(taggerIndex)) goToReviewByIndex(taggerIndex);
-        hideTooltip();
-        return;
-    }
+    // tag-dot clicks handled by explicit listeners added when created
 });
 
-// ------------------- Jump to review helper -------------------
+// ------------------- Jump helper -------------------
 function goToReviewByIndex(targetIndex) {
     if (targetIndex < 0 || targetIndex >= ALL_REVIEWS.length) return;
     const page = Math.floor(targetIndex / PER_PAGE) + 1;
@@ -875,7 +853,7 @@ document.getElementById('review-form').addEventListener('submit', function(e){
         });
 });
 
-// ------------------- Firestore subscription and initial unread navigation -------------------
+// ------------------- Firestore subscription -------------------
 function waitForFirebaseInit(timeoutMs = 5000) {
     return new Promise((resolve, reject) => {
         const start = Date.now();

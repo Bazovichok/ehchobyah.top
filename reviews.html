@@ -4,26 +4,129 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Книга жалоб и предложений</title>
-    <link rel="stylesheet" href="reviews-style.css">
+
+    <!-- Оригинальная основная тема (не трогаем) -->
+    <link rel="stylesheet" href="reviews-style.css" id="main-stylesheet">
+
+    <!-- Локальные правила: кнопки, шрифты заголовка/ника, отступы рамок -->
+    <style>
+      /* Общая шапка: текст крупнее */
+      .top-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+      .top-left { display:flex; align-items:center; gap:12px; min-width:0; }
+      .top-left h1 { margin:0; font-size:24px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } /* увеличен заголовок */
+
+      .top-controls { display:flex; align-items:center; gap:10px; /* мы будем поднимать обёртку */ }
+
+      /* Поднять рамки кнопок (чтобы рамки не касались краёв блока отзывов) */
+      .top-controls { transform: translateY(-6px); } /* поднимает рамки на 6px */
+
+      /* Нейм: чуть крупнее (на пару пикселей) в обоих режимах */
+      .review-card .header-block .nickname {
+        font-size: 17px; /* побольше, чем было */
+      }
+
+      /* ---------- СТАНДАРТНЫЙ РЕЖИМ (без .matrix-mode) ---------- */
+      /* Кнопки: чёрные рамки, чуть уже вертикально (padding уменьшен по верх/низ) */
+      body:not(.matrix-mode) .music-button,
+      body:not(.matrix-mode) .matrix-toggle {
+        position: static !important;
+        font-size: 18px;
+        padding: 4px 8px;           /* вертикально уже */
+        color: #000 !important;
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+        border-radius: 7px;
+        border: 2px solid #000;     /* чёрная рамка (толще) */
+        cursor: pointer;
+      }
+
+      /* В стандартном режиме: убираем подсветку playing (если была) */
+      body:not(.matrix-mode) .music-button.playing {
+        box-shadow: none !important;
+      }
+
+      /* Навигационные кнопки в стандартном режиме: чёрные более толстые рамки */
+      body:not(.matrix-mode) #pagination button {
+        border: 3px solid #000;
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(2px);
+      }
+
+      /* ---------- MATRIX-РЕЖИМ ---------- */
+      /* Основной цвет для матрицы (можно подправить) */
+      :root { --matrix-icon-color: #eafff0; }
+
+      body.matrix-mode .music-button,
+      body.matrix-mode .matrix-toggle {
+        position: static !important;
+        font-size: 20px;
+        padding: 8px 12px;
+        color: var(--matrix-icon-color) !important;
+        background: rgba(0,0,0,0.28);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border-radius: 10px;
+        border: 3px solid rgba(0,255,74,0.18);
+        cursor: pointer;
+        box-shadow: 0 6px 18px rgba(0,255,74,0.03);
+      }
+
+      /* гарантируем, что значок ☎️ становится бледно-зелёным в матрице */
+      body.matrix-mode .matrix-toggle { color: var(--matrix-icon-color) !important; }
+
+      /* В матрице — подсветка playing (видимая) */
+      body.matrix-mode .music-button.playing {
+        box-shadow: 0 0 28px rgba(0,200,120,0.22);
+        transform: translateY(-3px);
+      }
+
+      /* Кнопка: нажатие — эффект поднятия без блюра */
+      .music-button:active { transform: translateY(-1px) scale(0.995); }
+
+      /* Навигация в матрице — более "ядовитая" рамка */
+      body.matrix-mode #pagination button {
+        border: 3px solid rgba(0,255,74,0.36);
+        background: rgba(0,0,0,0.28);
+        backdrop-filter: blur(3px);
+      }
+
+      /* Удостоверимся, что обе стрелки выглядят одинаково */
+      #prev-page, #next-page { /* одинаковые стили оставляет CSS выше */ }
+
+      /* dropdown menu (page list) — черные с темным текстом  */
+      body.matrix-mode .page-dropdown { background: #000; color: #222; }
+
+      /* Мобильные правки */
+      @media (max-width:480px) {
+        body:not(.matrix-mode) .music-button, body:not(.matrix-mode) .matrix-toggle,
+        body.matrix-mode .music-button, body.matrix-mode .matrix-toggle {
+          font-size: 18px; padding:6px 8px;
+        }
+        .top-left h1 { font-size: 20px; }
+      }
+    </style>
 </head>
 <body>
-    <button id="toggle_music" class="music-button">♫</button>
     <div id="reviews-container">
-        <h1>Книга жалоб и предложений</h1>
+        <!-- Заголовок + кнопки (в одной строке) -->
+        <div class="top-row">
+            <div class="top-left">
+                <h1>Книга жалоб и предложений</h1>
+            </div>
 
-        <!-- Список отзывов -->
+            <div class="top-controls" aria-hidden="false">
+                <button id="toggle_music" class="music-button" title="Включить/выключить музыку">♫</button>
+                <button id="toggle_matrix" class="matrix-toggle" title="Включить тему 'Матрица'">☎️</button>
+            </div>
+        </div>
+
         <div id="reviews-list"></div>
 
-        <!-- Пагинация (книжная) -->
         <div id="pagination" style="text-align:center; margin-bottom:10px;">
             <button id="prev-page">←</button>
-
-            <!-- Номер страницы теперь — кнопка (визуально как текст) -->
             <button id="page-number" class="page-number-btn" aria-haspopup="true" aria-expanded="false">1</button>
-
             <button id="next-page">→</button>
-
-            <!-- компактный выпадающий список страниц (показ/скрытие через JS) -->
             <div id="page-dropdown" class="page-dropdown" style="display:none;"></div>
         </div>
 
@@ -31,7 +134,6 @@
             <input type="text" id="nickname" placeholder="Ваше ИМЯ" required maxlength="30">
             <textarea id="review-text" placeholder="Ваш комментарий" required maxlength="250"></textarea>
 
-            <!-- ЕДИНАЯ кнопка: можно выбрать несколько файлов (до 2, проверки в JS) -->
             <input type="file" id="review-media"
                    accept="image/jpeg,image/png,image/gif,audio/mpeg,video/mp4,video/webm,video/quicktime"
                    multiple>
@@ -41,7 +143,8 @@
         </form>
     </div>
 
-    <audio id="background_music" loop>
+    <!-- Аудио (оригинал) -->
+    <audio id="background_music" loop playsinline>
         <source src="background_music.mp3" type="audio/mpeg">
     </audio>
     <audio id="send_sound">
@@ -53,7 +156,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script>
-        // Firebase config 
+        // Firebase config (без изменений)
         const firebaseConfig = {
             apiKey: "AIzaSyBWTq4kFtsD0dFUc5ZlrCAcXUmi9p-JiTE",
             authDomain: "ehchobyahzavoz.firebaseapp.com",
@@ -70,6 +173,170 @@
         }
     </script>
 
+    <!-- reviews.js (тот же основной файл, требуется ниже) -->
     <script src="reviews.js"></script>
+
+    <!-- Скрипт переключения темы и управление музыкой (обновлён): -->
+    <script>
+      (function () {
+        const MATRIX_CSS_HREF = 'matrix-mode.css';
+        const MATRIX_JS_HREF  = 'matrix-effect.js';
+        const STORAGE_KEY = 'matrix_mode_enabled';
+
+        const btnMatrix = document.getElementById('toggle_matrix');
+        const btnMusic  = document.getElementById('toggle_music');
+        const bgAudioEl = document.getElementById('background_music');
+
+        const sourceEl = bgAudioEl.querySelector('source');
+        const originalSrc = (sourceEl && sourceEl.getAttribute('src')) ? sourceEl.getAttribute('src') : (bgAudioEl.src || '');
+        let savedSrcBeforeMatrix = originalSrc;
+        const matrixTrack = 'matrix.mp3';
+
+        // Флаг: пользователь поставил музыку вручную на паузу
+        window.BG_USER_PAUSED = false;
+
+        // Загрузчики ресурсов
+        function loadScript(src, id) {
+          return new Promise((resolve, reject) => {
+            if (document.getElementById(id)) return resolve();
+            const s = document.createElement('script'); s.src = src; if (id) s.id = id;
+            s.onload = () => resolve(); s.onerror = (e) => reject(e);
+            document.head.appendChild(s);
+          });
+        }
+        function loadCss(href, id) {
+          return new Promise((resolve) => {
+            if (document.getElementById(id)) return resolve();
+            const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; if (id) l.id = id;
+            l.onload = () => resolve(); l.onerror = () => resolve();
+            document.head.appendChild(l);
+          });
+        }
+        function removeCss(id) { const el = document.getElementById(id); if (el && el.parentNode) el.parentNode.removeChild(el); }
+        function removeScript(id) { const el = document.getElementById(id); if (el && el.parentNode) el.parentNode.removeChild(el); }
+
+        function setAudioSource(src) {
+          try {
+            bgAudioEl.pause();
+            bgAudioEl.src = src;
+            if (sourceEl) sourceEl.setAttribute('src', src);
+            bgAudioEl.load();
+          } catch (e) { console.warn('setAudioSource error', e); }
+        }
+
+        function tryPlayAudio() {
+          if (!bgAudioEl) return;
+          // Попытка проиграть сразу (в большинстве случаев браузеры блокируют audible autoplay)
+          bgAudioEl.muted = false;
+          const p = bgAudioEl.play();
+          if (p && typeof p.then === 'function') {
+            p.then(() => {
+              btnMusic.classList.add('playing');
+              window.BG_USER_PAUSED = false;
+            }).catch(err => {
+              // Если блокируют — пробуем muted-play как fallback (чаще сработает),
+              // но браузеры обычно не позволят потом автоматически unmute без клика.
+              console.warn('Autoplay prevented (trying muted fallback):', err);
+              bgAudioEl.muted = true;
+              bgAudioEl.play().then(()=> {
+                // мы запустили в muted — пометим, но не будем автоматически unmute (браузеры блокируют)
+                btnMusic.classList.add('playing');
+              }).catch(()=> {
+                btnMusic.classList.remove('playing');
+              });
+            });
+          }
+        }
+
+        function pauseAudio() {
+          try {
+            bgAudioEl.pause();
+            btnMusic.classList.remove('playing');
+            window.BG_USER_PAUSED = true;
+          } catch(e){}
+        }
+
+        // Кнопка музыки: не меняем символ — только визуально подсветка/пауза
+        btnMusic.addEventListener('click', function () {
+          try {
+            if (bgAudioEl.paused) {
+              tryPlayAudio();
+              window.BG_USER_PAUSED = false;
+            } else {
+              pauseAudio();
+              window.BG_USER_PAUSED = true;
+            }
+          } catch(e){ console.error(e); }
+        });
+
+        // Включение матрицы: загружаем CSS/JS и меняем трек
+        async function enableMatrix() {
+          try {
+            await loadCss(MATRIX_CSS_HREF, 'matrix-css');
+            document.body.classList.add('matrix-mode'); // мгновенно — без fade
+            await loadScript(MATRIX_JS_HREF, 'matrix-js');
+            if (typeof window.startMatrix === 'function') window.startMatrix();
+
+            // swap audio
+            try {
+              savedSrcBeforeMatrix = bgAudioEl.src || originalSrc;
+              setAudioSource(matrixTrack);
+              tryPlayAudio();
+            } catch(e){ console.warn('audio swap to matrix failed', e); }
+
+            btnMatrix.classList.add('active');
+            try { localStorage.setItem(STORAGE_KEY, '1'); } catch(e){}
+          } catch (e) { console.error('enableMatrix error', e); }
+        }
+
+        // Выключение матрицы: отключаем css/js и восстанавливаем трек
+        function disableMatrix() {
+          try {
+            if (typeof window.stopMatrix === 'function') {
+              try { window.stopMatrix(); } catch(e){ console.warn('stopMatrix error', e); }
+            }
+            removeCss('matrix-css');
+            removeScript('matrix-js');
+            document.body.classList.remove('matrix-mode');
+
+            // restore original audio
+            try {
+              setAudioSource(originalSrc || savedSrcBeforeMatrix);
+              tryPlayAudio();
+            } catch(e){ console.warn('audio restore failed', e); }
+
+            btnMatrix.classList.remove('active');
+            try { localStorage.setItem(STORAGE_KEY, '0'); } catch(e){}
+          } catch (e) { console.error('disableMatrix error', e); }
+        }
+
+        btnMatrix.addEventListener('click', function () {
+          const enabled = localStorage.getItem(STORAGE_KEY) === '1';
+          if (enabled) disableMatrix(); else enableMatrix();
+        });
+
+        // on load: try autoplay immediately (best-effort). If browser blocks, see комментарий выше.
+        window.addEventListener('load', function () {
+          try {
+            if ((!bgAudioEl.src || bgAudioEl.src === '') && sourceEl) {
+              bgAudioEl.src = sourceEl.getAttribute('src') || '';
+              bgAudioEl.load();
+            }
+          } catch(e){}
+
+          tryPlayAudio();
+
+          const enabled = localStorage.getItem(STORAGE_KEY) === '1';
+          if (enabled) enableMatrix();
+        });
+
+        // Если autoplay заблокирован — стартуем при первом пользовательском клике (best-effort)
+        function oneClickStart() {
+          if (bgAudioEl && bgAudioEl.paused && !window.BG_USER_PAUSED) tryPlayAudio();
+          document.removeEventListener('click', oneClickStart);
+        }
+        document.addEventListener('click', oneClickStart);
+      })();
+    </script>
 </body>
 </html>

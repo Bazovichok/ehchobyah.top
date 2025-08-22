@@ -1,0 +1,224 @@
+:root {
+  --toxic-green: #00ff4a;
+  --toxic-green-strong: rgba(0,255,74,0.95);
+  --toxic-outline: rgba(0,255,74,0.28);
+  --card-gap: 13px;
+}
+
+/* ----------------- Важный фикс (убирает бледную полосу в header) ----------------- */
+body.matrix-mode .review-card .header-block,
+body.matrix-mode .review-card .header-block * {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+body.matrix-mode .review-card .header-block { margin-bottom: 0 !important; padding: 0 !important; }
+body.matrix-mode .review-card .content-block { background: transparent !important; margin-top: 0 !important; }
+
+/* ----------------- Общие правила ----------------- */
+body.matrix-mode {
+  background-image: none !important;
+  background-color: #000 !important;
+  color: #b7ffcf;
+  font-family: "Courier New", Courier, monospace;
+}
+body.matrix-mode #reviews-container {
+  position: relative;
+  z-index: 2;
+  max-width: none;
+  width: calc(100% - 48px);
+  margin: 18px 24px;
+  padding: 12px 10px;
+  background: transparent;
+}
+#matrix-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+body.matrix-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.06) 51%);
+  background-size: 100% 4px;
+  mix-blend-mode: multiply;
+}
+
+/* ----------------- Карточки отзывов ----------------- */
+body.matrix-mode .review-card {
+  width: 100%;
+  box-sizing: border-box;
+  background: #0c0c0c;
+  border: 4px solid var(--toxic-outline);
+  padding: 16px 14px;
+  margin: var(--card-gap) 0;
+  border-radius: 6px;
+  box-shadow: 0 4px 18px rgba(9, 228, 71, 0.02) inset;
+  color: #9fffcf;
+  position: relative;
+  z-index: 3;
+}
+body.matrix-mode .review-card .header-block { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+body.matrix-mode .review-card .header-block .nickname { color:#00c96a; font-weight:900; font-size:17px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1 1 auto; margin-right:12px; }
+body.matrix-mode .review-card .header-block .datetime { color:#00c96a; font-weight:900; font-size:14px; flex:0 0 auto; white-space:nowrap; }
+body.matrix-mode .review-card .content-block { background:transparent; padding-top:8px; color:#77ffb0; font-weight:600; line-height:1.45; }
+body.matrix-mode .media-container img,
+body.matrix-mode .media-container video,
+body.matrix-mode .media-container iframe {
+  border:1px solid rgba(0,255,74,0.12);
+  border-radius:6px;
+  box-shadow:0 6px 18px rgba(0,255,74,0.02);
+  max-width:100%;
+  height:auto;
+  display:block;
+  margin-top:8px;
+}
+body.matrix-mode .tag-indicators { margin-left:10px; }
+body.matrix-mode .tag-dot { background: rgba(0,255,74,0.06); color: var(--toxic-green); border:1px solid rgba(0,255,74,0.18); }
+body.matrix-mode .new-badge { background: var(--toxic-green); border:1px solid rgba(0,255,74,0.32); }
+
+/* ----------------- Форма ----------------- */
+body.matrix-mode #review-form {
+  background: rgba(0,0,0,0.28);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 3px solid rgba(0,255,74,0.22);
+  padding: 14px;
+  margin-top: 18px;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,255,74,0.02) inset;
+  color: #9fffcf;
+  position: relative;
+  z-index: 4;
+}
+body.matrix-mode #review-form input[type="text"],
+body.matrix-mode #review-form textarea,
+body.matrix-mode #review-form input[type="file"] {
+  background: rgba(0,0,0,0.45);
+  color: #9fffcf;
+  border: 1px solid rgba(0,255,74,0.10);
+  border-radius: 10px;
+  padding: 8px;
+  box-sizing: border-box;
+  outline: none;
+  font-weight: 700;
+}
+body.matrix-mode #review-form input::placeholder,
+body.matrix-mode #review-form textarea::placeholder { color: rgba(160,255,190,0.45); }
+body.matrix-mode #review-form button[type="submit"],
+body.matrix-mode #review-form a {
+  display: inline-block;
+  background: rgba(0,0,0,0.30);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--toxic-green-strong);
+  border: 3px solid rgba(0,255,74,0.34);
+  padding: 8px 12px;
+  margin-right: 8px;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* ----------------- Pagination ----------------- */
+body.matrix-mode #pagination {
+  margin-top:12px;
+  position: relative;
+  z-index: 6; /* выше формы */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  overflow: visible; /* чтобы dropdown не обрезался */
+}
+body.matrix-mode #pagination button {
+  background: rgba(0,0,0,0.30);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: var(--toxic-green-strong);
+  border:3px solid rgba(0,255,74,0.36);
+  padding:6px 10px;
+  border-radius:10px;
+  font-weight:800;
+}
+body.matrix-mode #page-number { color:#e6ffe8; font-weight:900; }
+body.matrix-mode .page-dropdown {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 140px;
+  background:#000;
+  border:1px solid rgba(255,255,255,0.06);
+  z-index: 6100; /* гарантированно над формой */
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+body.matrix-mode .page-dropdown button {
+  color:#e6ffe8;
+  background:#000;
+  border:none;
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:6px 10px;
+  cursor:pointer;
+  z-index: 6110;
+}
+
+/* ----------------- Tooltip / Highlight ----------------- */
+body.matrix-mode .tag-tooltip {
+  background: rgba(0,0,0,0.92);
+  color:#caffd6;
+  border:1px solid rgba(0,255,74,0.05);
+  z-index:11001;
+}
+body.matrix-mode .review-card.highlight {
+  box-shadow: 0 0 20px 4px rgba(255,255,255,0.95);
+  background-color: rgba(255,255,255,0.03);
+  transition: box-shadow 160ms ease, background-color 160ms ease, transform 160ms ease;
+  transform: translateY(-2px);
+}
+body.matrix-mode .top-left h1 {
+  font-size: 26px;
+  text-shadow: 0 0 8px rgba(255,255,255,0.12);
+  color: #eafff0;
+  font-weight: 800;
+}
+
+/* ----------------- Lightbox ----------------- */
+#image-lightbox { z-index: 12000; }
+
+/* ----------------- Blur between cards ----------------- */
+body.matrix-mode #reviews-list {
+  position: relative;
+  z-index: 2;
+}
+body.matrix-mode #reviews-list::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: rgba(0,0,0,0.06);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+@media (max-width: 480px) {
+  body.matrix-mode #reviews-list::before { display: none; }
+}
+
+/* ----------------- Mobile ----------------- */
+@media (max-width: 720px) {
+  body.matrix-mode #reviews-container { width: calc(100% - 20px); margin: 12px 10px; padding: 8px; }
+  body.matrix-mode .review-card { padding: 10px; }
+  body.matrix-mode #review-form { padding: 10px; }
+  body.matrix-mode .review-card .header-block .nickname { max-width: 60%; font-size:16px; }
+  body.matrix-mode .review-card .header-block .datetime { font-size: 13px; }
+}
