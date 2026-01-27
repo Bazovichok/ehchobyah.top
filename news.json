@@ -1,71 +1,90 @@
 [
   {
-    "url": "https://t.me/avenuemp3/1402",
-    "timestamp": "2026-01-27T11:18:57.571Z",
-    "text": "<html><head></head><body>Редкая запись с концерта Playboi Carti, Lil Uzi Vert и UnoTheActivist, 2016 год<br><br><i class=\"emoji\" style=\"background-image:url('//telegram.org/img/emoji/40/F09F8EB5.png')\"><b>🎵</b></i> – UnoTheActivist x Playboi Carti «What»</body></html>",
-    "media": [
-      {
-        "type": "video",
-        "url": "https://cdn4.telesco.pe/file/6e23a31275.mp4?token=vOomvFtQBmWyRpESkEQ2VLOCiTIHyThcd4M9HmbLaR4tbS6AYSkrUJsm7_FZfqAXJD0G81SChHqwSSfkw9oE__XTH1FPqeyJZSPZdCZfsIotbiAhK_wmTUslKZAI58LHaV-VlZQ4frkZdTg0ZjRGRtQE9Xi98-2TlKHcn6BgbLeMlKZFGB0K7QcoYBJceI3RPaHl0vnVU8FSVwV9-pMODE_9mJIJdFh_dfYv6rUf99ng0TzSV60vv0PNGD4xPyJM8p10ZeH2eChLiqWrffrxzePNaAuGndAbE-WTf5UH0Z_KzBlXL-E6TYHr2q6qBmNtfMG7vepXcRpGf5DCxiTdFSpiKpgvV4CQTyphT3i5TaSkwuD0ILRD8FMK3_uP2nM_qzwg2S7svWbCEyoDMIdYFMzl5Ok4bQ0u9sxLlq8Ss9MBZP6c_tpeIv2JQRyEpAxqSoN-4UCHUIfuNstmZfA57sWuwAZ68skDvlDabpGIeODHaDUtkeUK9D9AKq1qWEc1ER5c0baUW591NMFuEr2GBzjoCpR0cHLNrN8J9hGfz4QuC8DnuwgL3Z2mJpNZ1HvH2HNMaor9HrmEr0tt0rKyvyUQHOg5phF_O8-CBQ4EdgkpuOQ7wlQ_ydY3Gdfd8MCADzK2LampfbDgM6n3G9Mm6dgcahqQ9qoas-CeH38w0qI"
-      }
-    ]
-  },
-  {
     "url": "https://t.me/avenuemp3/1401",
-    "timestamp": "2026-01-27T11:18:57.570Z",
+    "timestamp": "2026-01-27T12:36:19.324Z",
     "text": "",
     "media": [
       {
         "type": "video",
-        "url": "https://cdn4.telesco.pe/file/2175b10a4f.mp4?token=UtOmRZ66wter72DTaofKWx2N0WltwlWkfQg_z7TREty6O-stAezzWJk8AGVc_V1bn6VppXJVvrq5BE5vKdYFv5CHqIQGlrTC651TjFjNtvOL_qVr4diPKi0A-R9eCYoNVnEVnzRrgfy4J8551d087RPdqd-FH_CqaQ-2ru4ysdF_ishkLNXY3JWljFcp2DqyFSFTFqrUJxNsyLNAjsbzZYA3DPqrI62RPVvFFYZaswNnWMr2UC47TFqwjpVODPgGYtgFvj4CpwtaIa8TZVw3cg1Sx3iTuTKRB5AKUGIg5F43RSuc7l8bCEXK1Tbcg_gnPqXZbJ_sx2Qdi_W0VIuMhQ"
+        "url": "https://cdn4.telesco.pe/file/2175b10a4f.mp4?token=WD8Xsnbc8m0ZvP25h5hV6TXSZWSMprkMjF9KybTyZZR95qDdW5KkUqdK0cUiEpv6D8v6DTe3iKLuhomOYhJVRNzOB8ZX4YJxL5RV4-xPnf9GnV1oaxj35CKNV39q8_a9k2slfbz1ZEYm_R2czJLryCb71YauUo1sYIyZ72dwK2bwPyId5UcFXYXq0wC8IH5sGIrbchkiQtvQGngaS7y8t8cuv6MeYJ4rXZDvSpHPCS7CRqe2QT-0heMGzuNqS6_wjiLsse9vI8jPLz4LJZdl5_q6O5uh4KkjsU1W_WDVu9ASHVDI33kB7rCv9fhpTsxly1rZuJZWq7OEUyvp7x7ImA"
+      }
+    ]
+  },
+  {
+    "url": "https://t.me/avenuemp3/1402",
+    "timestamp": "2026-01-27T12:36:19.324Z",
+    "text": "<html><head></head><body>Редкая запись с концерта Playboi Carti, Lil Uzi Vert и UnoTheActivist, 2016 год<br><br><i class=\"emoji\" style=\"background-image:url('//telegram.org/img/emoji/40/F09F8EB5.png')\"><b>🎵</b></i> – UnoTheActivist x Playboi Carti «What»</body></html>",
+    "media": [
+      {
+        "type": "video",
+        "url": "https://cdn4.telesco.pe/file/6e23a31275.mp4?token=gQv_gP-MhGtpO-Y6UlI6k2GGWyrsgMRD9MBJ3vYT1f82---tiJZfmpWofGLk2CWQvJaJI6C6_Fcr5HfqV5RmRXxQLHy5-ixAvnYxVkJ562VXqdDk7YUL6jO34OGx5ayn7KJfWMWAqPm-q86NtVPuQn0l9DOWFgidSNkj9JgtSTcRo5W9g5-hIvJ2B-66eelq1q-v9gWgjgRQbuGjMqPhkD6smw7H8il7u8pE0I7YJA5ljduV9dhHv77tsxxNZshT2ah1_zQC8V7ZpK0-Y4ds96Ai1PLt6PdLv5TTlAuIbd2DrrengrqEWw2CGsrsZJaPbtZbJzLBcOLI3jyDPg1BpBA4A0uFLI81PNbRm_AMm1znJvfGNafauPCjy9UM-9XWPJIF6jyrwf33gkga1rJPxZhCQublNjge2X4qhziJY19we8ao5_3AfdwA8fNhOHnO-hJi_4igljGXBHmwni3Qm4wF9rLK407xMwUyqUdaaXq4HFjqisbn0WR1Fug9ygojMFlk2Yc9pgEMme7lRu_ctWRyxjBhYGGIRgJo_m5RhMah6w7-hU-uMdsWW2GLvALwrry38npn83fUfnii7ChCUzf74kX-FJyU7OCsfWLXA-Vo7LwkS-WDFEIwvXTioSfX3NNmBZaokGQVxDyamgDtQyXOp0VhXzTFmyJkR2oAALw"
       }
     ]
   },
   {
     "url": "https://t.me/avenuemp3/1397",
-    "timestamp": "2026-01-27T11:18:57.569Z",
+    "timestamp": "2026-01-27T12:36:19.323Z",
     "text": "<html><head></head><body><div class=\"tgme_widget_message_text js-message_text\" dir=\"auto\">Playboi Carti брезгает индусов?!<br><br>В сети посчитали странным то, что Playboi Carti прилетев в Индию на концерт, ходит в медицинской маске, хотя карантина в стране никакого нет</div></body></html>",
     "media": [
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/N1iQoTZMGlkAGbByXDMc6gFlEOIZ3vu9kndFzcz7xPMkfx7XcNwSuOCZ66Y3KESonOkwXI9xJZtZHLIhTu-fayr5xVhTQZTKNvAaN9NMHskSROyfUL3uKa0CVRG5pDs8-maYdctRR3GhwRiPoxegXNgCVI-4bNL-y9KTY0Glt_RdnLWJ-oNATzocwiRwVhnKW9tIRb08CxrYUZPln0jZIWmtZAHSUIOwnazW5yKuzhgnu_7DGuoVRKt0ws0_jAlc43mAVNAPw1CNc6RDxLHlS4z8BYACUoH2jJDPiT0GeVK6IcOCLfZsPuenWazARo71ztqvkVlmZGSz4E0BZxh7ZQ.jpg"
+        "url": "https://cdn4.telesco.pe/file/hZ30tyEO5bzGoP94zdh1nkUMs6Qfe7mU87heB7gS-3sthMCKFrqy5nV0bwPggQLjvAOlCM6u1kqzyubO-HtpjO1inBlVSaX3I7fZQ4_psmGjioKFig0LDMRyGXi5VykHbS8bsvXV74JfG3elc9L6SAqslW9PwGGzHqsI9OJ6YEBGAxpeq1WyqrYDYBvWGissdzWQiZ608adrxC7SWxmUrIzo0tl6OJ1ZjNBjTKG-oBnlLKz4UnYmDvfHFCW7KziAl3mk54nbkyPloQSCIf9z79GBdO5QwXa_-Pl81pBRQ_9TaIbH9g-y1r7OGo1nabJaledVeTb179xZhCLvimU2zg.jpg"
       },
       {
         "type": "video",
-        "url": "https://cdn4.telesco.pe/file/8ce1234ac7.mp4?token=iPSSabnL98poCYN2-AExhy89q2q3mzVrjxDzzMxMyC7iQipStUeEmMdJn4g--4HiwP2XzOmniPYM3_lxiE6p-V_0osCd7S13tRaAcZcJTzMhLElxVX8tnVArNUpQiWMu6dH4pO52RVxXPJO2EQFtMc38bCPInA6quR9uG6NKKRSvY4jo8pO2xgsTr_5XgGRwsgLWrV61Xv1pL1j1YRGT_Kz4XF_CE5G5RR05Kp31ey72x8wSqaXAnAxFVkWJCg9-9rYEBhQrY7-qwhYF3AU_9y_BwU1o4pac_VclkqGuZiPIVTNQcDc6sp9vx2U60gitVg1YMPbzkD5OX0XwkqMzZQ"
+        "url": "https://cdn4.telesco.pe/file/8ce1234ac7.mp4?token=L1Rqgd8XniET0gy0P_NUo0zsS6LxYvz_whJuvx9wBnFlQPxF4PRX_Gsz59sITf6O6LIoegf0CRxmlB6hFg1WFMk3XDDrcQ1t8cO-UsQ9j_7oc0MuKuq3ZdCWILReSqMGzv4AOhEYBuwJds-FqLAkANrOY2yvns8CiP7Dx4SyBItSP-W8eUFX3lE3B8bT5d4WASTNq5boYfP_10wD1M2Y4BL4mlVduc2f2pLUGZuhFvWDEU7GseTSV0kpPzq4ke_EK96qYmSUm4nmBBfKiAu9BdqLk8V3DG9W2U5u7EXZfla8TEoQzWxMXW2w1i_DGHeDup9I_meNUjHpBxakEPKRWg"
       }
     ]
   },
   {
     "url": "https://t.me/avenuemp3/1392",
-    "timestamp": "2026-01-27T11:18:57.568Z",
+    "timestamp": "2026-01-27T12:36:19.322Z",
     "text": "<html><head></head><body><div class=\"tgme_widget_message_text js-message_text\" dir=\"auto\">Мы дожили до того, что теперь у нас появился «KPOPIUM»<br><br>K-pop певица - Giselle, из группы aespa работает с продюсерами OPIUM - Nick Spiders, Clayco, Lucian и уже записала несколько треков на их биты. Более того, Ken Carson успел заценить эти работы<br><br>Напомним, что Giselle и многие корейские исполнители давно фанатеют от творчества Playboi Carti и его коллектива OPIUM</div></body></html>",
     "media": [
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/T59QzOSoxulZwXmbA006Zlpv5F0qietwaaXrPwOlfkIuUeD_p6LLr6iZ2ju_8jv2_Itr81ft6rABJWFF7j_l-c4wQYuW7AROij4vBHcKISesLnIa8rbiLwm1l3r7sPjEF46MwCj5oz4J4idvOvGYr0mhdfa7VJcE0HclynjkbA9PAAUm9x2Y6DiZFI2OsYO2cvHNmVfgreDzQjILVsPWnwedog43VTo9ifksKs1tpYT07qxwqYMMhbuQy49YPTqgTofVANoQKGNk7XovPO5z7osyESW3PUm9XtTP3WU_9swhxVxqJQfnlZAVF_0GdHIy7QM4lQXuw1Wuj1vWReob9A.jpg"
+        "url": "https://cdn4.telesco.pe/file/qZ_cMidqP1bofGApcbKzcCNw0bvEG5h-_IXpA7cRN4zqP8psNGf8-u0D2q8kzkwOMG4-r_czehqq8MR7Lm0q08q6miMOD74k-snrqmxL7rdEArzHzkoGHA9DfEy1MtP55sblIyMBq0JP9NgFp2Oui9P33OT3fGMUJDsqqDss9xjEhEu8wTLmzbwPfeQliRioaIG-1GlR5QNx0Z1yz0YgsR-AnL45r26PJSs6veSMseBDSLXRtF9P--JUuLt1YWFb3UiSlF_CsUF3yC9CPj2xx5PlzQ5o76gvF8paB7o6GstwOQ4tZxvWjAdU1cxZFFoaw3x3uLeX5j_XYMPf31qiwg.jpg"
       },
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/HiwGw-csomBfDRnzUQqYS08RIcavoSLL4tSHPavm-c3cXmkCZJT6ED4c5g7K3oolyFFgeQ9kDqv8y0XtAPVtVyJsucyttfUsJuwz3DzT92dCMB-uGGHxc611iiAP8vQp7aQI7NeCYGi1whyTiwUv-2rKZwJpHS9T8ysREOr6vZpFy1fpkpvLkLxUuVECY2XVASCRwivr6FQLeX9It8qm-WSmehhKKAOu305Fcwxy8a89mwCjau1-AY7IeLgygad_FH-e1k3Z617R8ZaGyCAjIUe0wmZhCvxbRlkli_02jfpILL58Yt4Uy-DSJbNsEzTnk_5m5CE73x6jhU28Lwh57w.jpg"
+        "url": "https://cdn4.telesco.pe/file/lIwhCeU-hXevziIzGrGvn9fjcvoiklGNj8T1eo754rHeCAojVbkSY-1IatbFbcUCRQN7cwDRg9ByimRVsV4nOemhMhIKjjtfegt7ieo7KClDOeBlkEBD7-rgSPh5Ql0nT6S6ChDZVu6UwwzlkN7XFkCijCAvc-8NciciuAGi2JUE9ikLVpY6slMU3JMO5xuUIer1Apjwf9F8KkzUeBfTa46T8QXvI9aN6mrZ03PQ3TbTlRNwHCnUC8DS_f-OWPdRsx5nDDHVda5bJRzs7ckH-SXD5VzFfkIt-_fVUPhUtoQtDUQOX8XZGq9jPHV0-F4jOei8nhHvHIbX70LVF6SNQA.jpg"
       },
       {
         "type": "video",
-        "url": "https://cdn4.telesco.pe/file/6d1502d594.mp4?token=ezPa0TGyxaSmysfHFuREutPVcnm7Y4v7_5Z7kE-zDfUN_ykoiJcly8X6HlYozM5Vx3Dr_kODpBjPTinWVHQa0Cu-3qnbbQSzDT1VbDqzJ6qEmWRG7AEqAdvgfy5P1uOPJvD6z6L0hpxQZPpg5lZvgV_Gq00hK4b_OLQHdD09eZDYwr1dGGj9ltwrIngXdifQGgQaNW-Ir1lhvgZC_wSHpT0h4ORjGIeJF19jlI-hV2SqgnHAayWXkTbrWg545bDwVAKeYy1Xz0T1v6uEGML25BeKINm0NV07U4-jzLMrtskIp5lxFR17Jli7Z8IB-XmMGM9Gpz-O18ZzDfFDgGmeYQ"
+        "url": "https://cdn4.telesco.pe/file/6d1502d594.mp4?token=syC6TL7O9rF_sG1Gn6G5PSbizIAEKHKboFmTVzN-mIvY3tWbB_w45uvew7UtRzMD84EntTCTtmwGYj6WNRQfU5dkzWAumN0K1P4U2oKVVuftrGJYn6iMoATm7G7aayvcoY3KvMjA9hMcjdtO9i9Ey2qR6APaf7BZI4uwfte2vY3LuM_mgKMRyCOmGhZ0b4Awmotv0xqzBhMMC2JPBg3RH-DXlbQzsV1zaaHGl_GO0n4EwsSHvESDNtyXhdZScpPwWeaXBvmeO_P4UhCkTYpfUepp69OtS41YeNhL3unlmbFXWLfFHRqe7utxUitlZRqErFlZBKzFMwHyXvfnLERW6A"
       },
       {
         "type": "video",
-        "url": "https://cdn4.telesco.pe/file/c062443586.mp4?token=ULukU3TZcGPIJbCyUAFaLgAgxJ9EKd_nMllHrYTjzXFQa2OZ_cyFikcsNckC5S4GKW7bmdzR_tw4kc15_LlTp4oct8dwKP6w9eLNi9F6w_UxEIyuVOs0KhHx_j3TCl0wKAYgVnhSBmrsw6W7qmbp5ynMiiAqH4vTOZMuJqda0huAFDYN_O-mft9ppC7jeLq0DwhBR215ExLmoFVHjOokdAKqVyxmSIzAuwwU5xULRax2p34Hh9Sza8C6MOwBzB9aY6yUHsUB6fEOZjUmHtEo3SWHYfwNbwlpTal_ixgkTgHpHQ4g6Id4T9eAEfvvxh1uHpjNjv-FYcIlxg7I8RgBgg"
+        "url": "https://cdn4.telesco.pe/file/c062443586.mp4?token=snLpnc8j7YjcqtoAMcugw9uFk7LRx-m3mPCRGFFOj13-7MtuOLzbPmpYpZqGwNSF3_XusQ2sShhvAX8iwu4ZubEfEUWPUs44Tp1Z2r9kanVJx-njmxBAY6cNOnl536NbjSrZH4H5IxJy2o__d9VItEgGDB9dPF0mMTeL-SsbIUJ-j7BeK-0cpiTPYjvp3uaaYwiwP2E4liW_vIODgP-e7roed22l2Ri-kPo7GODtMKPgb4_ZtgZH_xeAhfKusnVjASTxdBdvMkgHakavI80NlOkdXmWJ4ULrdumV1TafINGguKdmdIWlMptthB_evhHLowBC0AlQo1v57WqgBpApZA"
       },
       {
         "type": "video",
-        "url": "https://cdn4.telesco.pe/file/6c772a7974.mp4?token=CsfhDnDWGuqlhyktVOYSH6GY6vci6MDPqoepwjm_N4ghscWCuJtMTcFtsAMkbuSLLIs60AfjVRmTaJITLkP19-fuX8wKdJ3xUM-OTixwVQq4tDkxFDYk0tY8cyRtGpOIb1w41GQONpF_tNu6XfJAEo-JeRaoWf6AwFqnzP2kxPGjT8WppGEoe9Rw2TOOJkbw5poBcrhzQ0UPJ1uoFE86uwQP7ClNoa98Dg5ZAzJx_KRVQU7UBYRBsy1iQXunZScGkeJ1jRhVPWBQ4VwYD88wCTQQ_MpLKa9cOGEw3Rn0unipTNGKLyBoXaMxJdp5VtQTUY8qsMcOb5-gNTV7YP7r0g"
+        "url": "https://cdn4.telesco.pe/file/6c772a7974.mp4?token=TmMt-h6n4XhJp5cN4O_zQd0oKFHQT9Py839Iz0j5zCHM6yhF-rph-y8yA1UMOqfGLBbKy5XweqBve7JJoZQ4_lJWiW7mmA6MqkCiz1EpFF7fS-KyM2FSkGrbzB8z0zRqYh2f8oN1XMqOc5THrJPtkx3z3UFEg_jMFg7GTZ3JWwZMVoiYGmCQOTYTs_HQc2yyWa9eggWPfERB5RjbzEgt9OQuDRVmloIlyuG9y_1zcw0Ycn_itCdc9XY6utsmc5hp7b-40WOw_ERWlyKc2P77aPQ_NlkdYeDcttGY1IR7Ez1yBb_D1IogpvgPmx5qW6B5jF1c5d32Fy0-7o2VfIOATQ"
+      }
+    ]
+  },
+  {
+    "url": "https://t.me/avenuegang1/10674",
+    "timestamp": "2026-01-27T12:36:19.149Z",
+    "text": "<html><head></head><body><div class=\"tgme_widget_message_text js-message_text\" dir=\"auto\">Famous Dex отреагировал на комментарий фаната, под постом с его треком из 2016 года «New Wave»<br><br><blockquote><i>– У Декса был такой большой потенциал и талант </i><i class=\"emoji\" style=\"background-image:url('//telegram.org/img/emoji/40/F09F98A2.png')\"><b>😢</b></i><i><br><br>– У меня всё ещё есть (потенциал и талант), просто сейчас со мной нужно немного терпения</i></blockquote><br><br>Грустно смотреть на то, как он пытается оправдаться</div></body></html>",
+    "media": [
+      {
+        "type": "photo",
+        "url": "https://cdn4.telesco.pe/file/CebLgrtWVeapU6G3TTt-aL_7moSXjRrXfpMPrPBtrNUt3x7coGjhqe4xncG81tphBLBjQTLm8udYXBruIWGLVNVBiAEBq-rFleNEXeJ2YNcXNh0quj4XdpMf8ErIJ4sFII6W4uvRWRHOtPEu80GXeS7sBW7H_2MyjspoY2p2xg8h1G-Ep4ZGfhqiAmg_4wBwUI4M7BLuPXoYMNYlK-sLmSeP8JfIwmh7mzSruWa_RPqUq9Eqb_GIxLemOiGKs6AKbT7-zp2sb-tPL-28YpD6GPw2wKzag6BsHKp0vyh9ZMWVe-1f19zgAWCf-9dAERFD7S0X-omzd2HJj-wqh3oO_w.jpg"
+      },
+      {
+        "type": "photo",
+        "url": "https://cdn4.telesco.pe/file/tZ479o4tzoIywlzkggBM8BASw1a7WlN2nxVqXnbBawlYOcHKbavSURy7RSDVciLdnp9LTzLe2NgbhITYWMHygz-2Ov0h7F5TAGdaonPKV1Ey62dGhJE1IMGUgyW16WY5_Ud5KI1lI0CEI4tOjE45o_DwldjMJsGYIP0EzfqVXkXXGHcvoGu-fz5mA-cHRHErK6V_2gAnZcak-slZ9xbmCnnUlyvoDv9kGS3MR96dNUgBbTsU7iL1p1oRY2fICNrDbk3chhkF7gKLu2hGSPQ7-Rl7UlaPqv9ogbtO_tilmtInH_WGKiSXdH1QwnW20b-BGq0sGCf_osK_9ToXAXgvUQ.jpg"
+      },
+      {
+        "type": "video",
+        "url": "https://cdn4.telesco.pe/file/7d476a4a5a.mp4?token=dNB7yOTNBDef2yGiNekLLbciXnhvihn2ZfWgaw46A7qlZlbSs1rFEUulV3NGDxOWcSkOqGLxhaatFyaHaqFCj-nOnrENODK9UfUEnXX4SZVGkLNvLFKU1G1Io_Pc2YCtnucXNSR1ONt4nzlHcnepa5zlFwh7tby_0oFLnW8FaTtqK1Uvjfem2fB_ycGSoYCjMw1x5_ar-7JQK_uJngb8RvR3CaSUrV1dNtA_y8646vjRRVG-a4R0291J9ATW392sWLt5De4roLHH46859q_1-ODdmuXo_IjgTLHojkuv3idZiJaGEOOQuq4RwsChKT67Xin9XsymyYSG7aM9x3c_OA"
       }
     ]
   },
   {
     "url": "https://t.me/avenuegang1/10665",
-    "timestamp": "2026-01-27T11:18:57.544Z",
+    "timestamp": "2026-01-27T12:36:19.146Z",
     "text": "<html><head></head><body>IShowSpeed сделал сальто и приземлился прямо в бассейн с пловом<br><br>Только вот зачем на еду...</body></html>",
     "media": [
       {
@@ -76,13 +95,13 @@
   },
   {
     "url": "https://t.me/vtrende_music/19033",
-    "timestamp": "2026-01-27T11:18:57.498Z",
+    "timestamp": "2026-01-27T12:36:19.077Z",
     "text": "<html><head></head><body>Akademiks заявил, что Lil Baby заплатил ему 30.000$, чтобы тот не хейтил его альбом после выхода   Ты заплатил мне… Йо, Lil Baby хватит этого дерьма  ВТРЕНДЕ</body></html>",
     "media": []
   },
   {
     "url": "https://t.me/vtrende_music/19029",
-    "timestamp": "2026-01-27T11:18:57.495Z",
+    "timestamp": "2026-01-27T12:36:19.075Z",
     "text": "",
     "media": [
       {
@@ -93,7 +112,7 @@
   },
   {
     "url": "https://t.me/vtrende_music/19028",
-    "timestamp": "2026-01-27T11:18:57.494Z",
+    "timestamp": "2026-01-27T12:36:19.074Z",
     "text": "<html><head></head><body><b>ICEGERGERT флексит белорусским салом</b><br><br>Ну и в чем он не прав?<br><br></body></html>",
     "media": [
       {
@@ -104,7 +123,7 @@
   },
   {
     "url": "https://t.me/vtrende_music/19025",
-    "timestamp": "2026-01-27T11:18:57.490Z",
+    "timestamp": "2026-01-27T12:36:19.071Z",
     "text": "<html><head></head><body>Travis Scott <b>оставил автограф на сумке Hermes Birkin</b> за 30.000$ <br><br>Поднялась в цене?<br><br></body></html>",
     "media": [
       {
@@ -115,7 +134,7 @@
   },
   {
     "url": "https://t.me/vtrende_music/19022",
-    "timestamp": "2026-01-27T11:18:57.485Z",
+    "timestamp": "2026-01-27T12:36:19.067Z",
     "text": "<html><head></head><body><b>Face* решил, что он «поумнее, чем Трамп»</b><br><br><blockquote>*= признан иноагентом в РФ</blockquote><br><b><br></b></body></html>",
     "media": [
       {
@@ -126,13 +145,13 @@
   },
   {
     "url": "https://t.me/vtrende_music/19021",
-    "timestamp": "2026-01-27T11:18:57.484Z",
+    "timestamp": "2026-01-27T12:36:19.066Z",
     "text": "<html><head></head><body><b>Mayot про самый странный отказ от девушки<br><br></b></body></html>",
     "media": []
   },
   {
     "url": "https://t.me/vtrende_music/19020",
-    "timestamp": "2026-01-27T11:18:57.481Z",
+    "timestamp": "2026-01-27T12:36:19.062Z",
     "text": "<html><head></head><body><b>Future и Young Thug показали как нужно «держать баланс в жизни»</b><br><br>Во время записи на студии Future решил, зачем-то, опереться на 200.000$ <br><br></body></html>",
     "media": [
       {
@@ -244,11 +263,11 @@
     "media": [
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/Wdd7AjMcfUlMsoWsu14m7N8yEQGr9JCVaAlZHzg6uAmh5bprpLxih8KOj2yQaQvfwZzqxrNHNAlreodfXaEBG5O280p25j49l-hofu3OnPbK65aIWuOvlaKsw2RuJje0PJaAKmbgmOKpX8NNCbe4Knid53fCYanTcaOa6Jp_gsM3sv28InU5xyTOsOOxl1u56ealMjIYGSudJL8GZN_1ZJiqWjE24YTiYgGomXZszebUnqSsiRZmNcfEWNEOZXUDdZw1aaskRA-vrdyu4cnUwFsVuUEZFcsgMwu8TpqPkZEjUseEmN-5c5zXOHUu-sbMeNdjh2EVtW01rQcVNpmXGQ.jpg"
+        "url": "https://cdn4.telesco.pe/file/tx_d7hAzxibSkdJ3YNXoDjc7q6iqzF3Xg8uIioVV5twSrA8z0FGdriW_4c7yTdXxSge8z5jlAARg8Qvyt9BrDUjVQPWryZvtyEwTYtEMY0HKNfdv_yJ6WOZobyoytWlSAeRKDKDxC3ZP3JaPonUccHbDkwpcN34xkIfd6bNh5lWyKwBkYbxDDGblkT6PM0gn5vTcmi-oD8TMja2-EvTGjpdeWZSu5KiThWRP_XAL7JBS49hTBH-Qrov-vRy8Nkrz8smJ5UjKlnfdELYlwBrNSrprxwt49Ug4hqqYzh-XLLfn76PWEgYgvDMHczy-yr0H_sTRXWkqikAHSgH4gn_JSA.jpg"
       },
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/Ep03LA6M6OVXMBY9cyHEh-6-e2gILi-lVNxi_crD2eslIdQbHfEdUirNZjivTpJJS-zWyr40ORkuomvuiZJfpVJDAS8bn8Sv4IUetfQZsU_eJWQmrtoN1-UV3wXpf35DyHmN4o3BLBuaWBVSpBV-gjgJ5wUJRCRcdt02LJf9wTaCBEKWGzYlxjatpXwlOx8JovX19AwEvDQAyNwo2CDvc-gOQXBtL_33NP2RZWYdehcTAy6CGNYOUF1ZIo2k1g-h_xX11HFjxCVBg2igq_KX_sF1MCCJatGEwCl9cBn-LOUrSx5_782ba9ISbS_SkRvxhFzwAs3mznSsOa6fa53iWA.jpg"
+        "url": "https://cdn4.telesco.pe/file/SAKiUyfwfDxFZvepze3ezix2i5tE_Tuo2Qb72KOL3GbMSA6woxPCDHJ9P8awsQ_7gstzAgR-mR9ow_mppTOuiPjlqA2uILrATRO5vwDPEmwFkNlP3Ebs3ZTPWu6FykPoRrUtH9JibsAbscYTiLP1GtsDviRRFfpQ_mdK3bzkyxilxlN779tSj0tSc38WiMFYTdvvnxanwFps5jDljw9fXmu6mgRo1--8WbFdS4flt7NXOVJ_xrpC5w1OOHZc4FKjv75ufvulL81Oy1uzezVrMYbgsHodCqZoaa8VFeGiTjQSVqcXfQrwqbLZTUmywA9zJuUK6rMYgBs5EZECQbRxUg.jpg"
       }
     ]
   },
@@ -354,11 +373,11 @@
     "media": [
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/ucjGBeXGQgJcZ7vcFYq_ecbGBUg38gVRR8doLFYj12_Mbv2j5fnQSVcuynGKU7-HHI4I1qqAG_wn20CeEslypkeX0jmVNPCvOZUzwpJSaKT-aiLmKnNWyctBI3Z9mcI-1DsmJdoFpc8c3RpkXnnrUsAnr8VC8B7Z_EcFwO43gl6H5ZtR0-ORqbOtH4D2gkku6z_sYGyqqRfbD4b53RltSuiyRaFXmoceaK-4wTNwzA0147M7r_H-6PE2hLcxXGRgdu2yMwRb8UicmXbtTJgoUE_igmnkG7ND7Ekt-NghjHLBfqp5P8k6Asg_q1upMYXNwRnmGKhA2dTNM1-NjWKJ_g.jpg"
+        "url": "https://cdn4.telesco.pe/file/WtEzJs5x9xoBJPgY9s_U8OMKa96u13wVOL9D9IngnjXGmPXwZHS1baDxcWiiJU4bhDYtbNzFOGbJtI0unYnCZLdBrbMu4OwPSwI9G8Iy_LH7lUbvCIOxBQQvUYLteH2JNynsG4VoEzrz7oF3nc8ndusyVtwklDEB1wfddUIn3EklFbpcZ3n-l9zWplXidVTYFjdLooB5Ms-T95V3Gp4N2XNF2-o_ZQGRwWFn4QUPl0RK0Q8fxl5h8RuGC1MU27wjxYoaw5zHRr-uowjq6-Fh5sg3jE7Cd768-jTTPOKdmEL623QMlLFjDB-HcK38uRSZt1b_M-MA_hBmfDspkj5GGg.jpg"
       },
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/vrwQ9eIWccyGtybgGyJ2YHfftQ4Er9QW7GEL7ycHjkG4-8kcyGBiA-1UfFGZLhdyoqrtJqCgysCXQz2qnEk-crc_PYg9oWPYhSjRhzi95GYqip4O6WMYfEK3l2w3rKKAXrsVVVyJOJTdyQeYX-ABHewUqyyBI-gW9uvxH4B2AIo4rmoJ-_G0CIBsyeGDCC7dVIIZuE4zrvrnVPcwDvNwOdVJNS01_5r3OA7q0rG50wiiHgutMx1ECyEjf6azYdb_My7Gj_e7EMHutA8BcVSFOrZfC4_8fn96aCxt0MwLGKljJ1AszOX3Tr8bjppzMRNpGbes9Lh8eAmiuGbRrx9rcQ.jpg"
+        "url": "https://cdn4.telesco.pe/file/HF2kOlO_ckHlBrnkK9ZiOeZCU9cRoVL2kDTCSNoisC86y-dfoJ4y_g7_6IumWsciTTVQwV_sbfaA_cOJGRYwIVfl5zWCliPHhr7HO_P-Le6G1jLtf5ssV4cK0FqL9JBZCJsSAzlXH7t4e3imJoI6vftx8yMb0aPLGmyBs1T6tnJ7tnSbd52YGFREzJ40cr92GgNtNBoT0PS5USWOBIvsLVeMp78ScH5Nf_HMJagFKG0Fld45zCV5jRuGiYJIpH4Y_xDs7KCxqH91PB885ofZtZu3AqPP8bO-SeQ2WfYYjRbfoGQydk3Lec0o_4i5oUWjUxJbxoUxAFXOJa-sQNBtvg.jpg"
       }
     ]
   },
@@ -369,23 +388,23 @@
     "media": [
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/oos99Wp45DFyEDGe46fS-cJS28sbeoy08ryot776ytY2gl4Y9IY_0Pr6vfiaAADx3iweKWOUTsag-JMrzWxYlYRtem4tqNxa1XJoXNAqHryJfEyRZYC-tjq3pnDdDrLFyoujp8IhOcqWGl_uBt9zbTySe4RbQ3BrKQ0HzmeEdvVMdPNrLOJLL1OQuEdASUcnSrKaW0chN87n7m3i6ukyHeQWBZAAsmW583vfsMAWcmwFNgs4eTMw9BpDjW8SBh2LEv5tSEBNSI6z_q86DQjVABIJSk9yHn2DwNwy9APj5t9E6QM4bfHZ94lNp9qR8XX64yEWkprC9mCPn0Zg_j-Xgg.jpg"
+        "url": "https://cdn4.telesco.pe/file/YEUA9cn92-DE3pcObS8LSkUKKCbxIKliijjErqfKrpbh9MGKKOqAKmtiExnuWfCaW8_c4DfOn2Miyc26550ZeZV0lPWH_JLLVqjB93rr8ifJ_4OVxnMQBd7b-ApT1N4ayHcKg_SSFEqw5Smuuk-4B_fS_6QgUl1wmO4ftKINSaEUOxeyYx9xUrweZ-6n31FnWFp16zcNZ-BfSX1mBrtTUSOhFt6Vk6TBQr_Re8oRJ33Edyrf4AMjC9fGnAFa6BhzMetpaTJbzxHh2gxp3nsV-uiL3GkCdCUj7Z-ECiaQxkqLd3ILMcpEjYBgt2Maq0vnJ-XWL0pUNs7g5d-jMi60Cw.jpg"
       },
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/EVNRBafxVQE3InP_Y6BVIUWSZ29XMBdtP6j_q0engXO-dFzcKPDHnfGRmcuybKiXRlRuniBo1iCiQG_qY6tHOUygRqU7RHvnkZxTDqm1jePTlf8ElyKWm4fFAh9CsStAykeW9pIZE4Jask1xtCaNzS9anUqmS7jvPKrCsb722mBpCnA3YHuqeLTMLaQAJ6Kbj3B2fjbszNzdh53YSQundgZ-5-ofxCE0iJQ_yHogDUfb6KUFmagkKkrKDXm1uaxVE3pinAVagqiwb1G8Bd011TCspZzcFcgUACTmbzwRnc5nqOAJEDFV0nkKBbPILULAUivnmvfwFOU0prU14Z4DnQ.jpg"
+        "url": "https://cdn4.telesco.pe/file/RmKbxLZJTgm7KFobUc4IebvD8uBwAO53rF9F4cQiJBpNX_lPIjYw-YuhqUzs8dTelOB7uotvbQer5OZbNYrVo6BU0CPfLZNsaXw8_km_PqjH8THGbIq_gXAsQlQeBHjsp4VJG8KtGgxDkPzzdnlqt83Aa14jBkRzhTTmSePRaJk7z1MaGwPD2U0nW8jf7gnyfyY_fOPJwtO3VNgH38jm13J0F00Lv-0c0uzM1OPnShQrgMG-olTl7kYqg-3FzS4Pz2fFF4XF-vrMcE4ePcK8pMp3XiGFZHrIFmuWj61VvmnVDfsuRaSwZmHVyCAVvO2iAhgxZWIh844lgl13PazW3w.jpg"
       },
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/Vwzlfkvg3Srjymwza-wYJhCbdQmZLdlFXQkpAJfcNlmcBPTv1N8YF6M9sg08LZ2gTCQPBWYdeo3XOWg_RNmiM-Y8DagZt7slc9v4MxiMufBrwjxF6tXKBX5PkV8vH-MKwaUk9boCNbBHyFaxgQH-HRvNVfJ3WPKVazS-12tWm-XGOLpB9HKa2LuE6M_0wV-lJp3348VQZWqA60kj27dh88JO_0Upzsy75A2w-XrH8aLWS-sW4rm5KqbByDclmeDWl_g9sSwuOb2NF2TchUBOoehp0gO4kgUhEhENqwvQPZYQhMfCuAz0hgs18NlxhVl_aISNmJFbAK9nLpKlwzsP2Q.jpg"
+        "url": "https://cdn4.telesco.pe/file/o8KvNQVXaVuxo8_95ZGLj43E9Kr6iCODsJasdmA2-KpvNzqXsv0lr12HGdWVxrAMbD_5fHhym573o0fVjHStQ8vlyu1AbZhwyX4ut3-SIzL8ihk-vZF2W0OGOxTuC2u_AHNetivArPwX9Xxf5vs4wbhwpmogGIPXSirbQmN_817de3zSzr6aRr1jX6QmKlLIF0Zq8eog943an3ufnhP8PXy9IzrVX1Ulzwlblz7RMKrCPzGD38X-C39qMOqIABE10BJVYzYS3H4dF8yiS75M81qli6Uwud61lNLmby5qpSdHCChpY0nD3U2bf6cYuuB4Ym7TdHdxDUNPD2m5jf4CiQ.jpg"
       },
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/pIZ9i4FB7CRDNp1Uctuy17WObrvjdYiNEugjUqepJCRtffsGFApDiuYMVCKOgRJzWnIXUjIqGnVZw2y0ccTZqO0bNerNAn7HjRXlgdG_Y2ucO-OE0oYNzGByN_nyjO9NKUCu5uJN8VrJboUphL99SEpg6mKoW3-_XC9hLRbaZ8B8KoZJgRAUrvRXTi0WGJmL_FwVeBeyaa5iMGcozEgkGNI1WkGRChdIH6JWY-TpfFsIPeflHqlsE3_aB-8XrNUuWxzLaZTXrx7C0lBTVEpQL55FqM9yXZzWD727C8YK4gWf8zyeMLfdHvud3BA4b4H_15cTnFB6Mueiy9PQt_UDng.jpg"
+        "url": "https://cdn4.telesco.pe/file/HsZiReq6nkY3uY5L0U0-vOoBn4AZ85EFi7wAjxKZmv94AJdT4oXDkLv23LbkcBirNHO01C5AvDH8hQHuggJeXPEPPdoKC4f06MR-B8A9VVfK3xnGLJjQdKz3hSIKT6IaJZJ_2R2t2G0GvAvIq3Q4dANNm5rmhwk6N1m9HrR0FipIT5GoxtuCY3agR8_ZW3lnIY0iWW2usKfMPmie1gToS1Gy2CC9Su9f4GB8Qu-YJpEyC29ouR48RrRg723wZh-vGD08xf2tJj0YspJ31rmC2o2ChfBpJshyxIwguTMWeldswCu24d00zDvZ4hhbOKXynYkxn1wW5tRM-CkwRU8aFA.jpg"
       },
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/sS6goTkLZA0jwt-7DiRRYy_xe7R_h7ooMu4MkQHGt-fw7oJp5Y7ddXDxVomONZJfdMfDapWf7NjZANbhV4JmIxwXEtZPvuHKC0O989zImalfZkMw_DLfFOC6k6ert8G0hzAPEhAwM9KZqgP8UsbdnO_JuiGF8ylw8QhEoylkGBlir3R3gmsjupu-3RGR11CbY-eQuHDqMFN0kFtfU22HM_jcdYZSV-rsYWtMzMj0LNgqb3wi49ooOht-m6Dn0F8F3PN7-fWct5eUYPjqfrqpBs9rns699HxqJrQgBdI4WkvWonNvLBhhmtjjz9E-jwsxSj6VfXhFH9yogpGZAqiVew.jpg"
+        "url": "https://cdn4.telesco.pe/file/WP3H_WYz0dFblANeSwgUpXN6g5HAU2fRGC0f5beSi-M-dPzMDo3OGYToEQSmcFWJLlXzEVE07NjhYQrBJCox8uSpMM9mrbxW6SDPelPlvcnWRrm-trhdCwKvSAbiCHl11yanpjmslPT8yX9n7x4gx-XGgyo_SyFdkgK7s43xEHThDlPVyeGHhXNHoYoaSAZvJTKrA4rqLtuJ9pGaXlcSNMc1K2wIaOvfeWYntPIYiga8du2D_3HbOIXZxiMCp9qtWg4fPYazwk8YNa2esavMWkEDU_IwONkHg99gRzsu4H02UO9Zt8IVxEFfoVu1OAZPPeHKLLUxdaXRA876AvIDGA.jpg"
       }
     ]
   },
@@ -396,11 +415,11 @@
     "media": [
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/gtCcb0WARTvxgB4thvR_xyZX0EPpW_8awj6d4X3p8buyyYYQRVDrU5ia__E3d7-ubF0hF7fQG0NEWg4Prxfc7IWNxubO_cIiHkapY-JVhe62SvUVJ6z-y42cLkp7b4sYTof75N_nFlSbzC-3KGO_lU-bGm6qM9sQt-b2UEf3cVdGwcdiINU4NnRAkgGaIMkvzuH4iE_o7vJXjRNneXT5j9HOMg-lPod4gcTX7PWU42VB9qyxOCWLZaS-ooTrWopYtXrh1hoo7P-whh33A3P6iBfdFxsJfngTW0ynITmlzxdvBPSSWYLcV8jAQlEkMhqdVEqUbW0cx-ZQBG9ihLQoaA.jpg"
+        "url": "https://cdn4.telesco.pe/file/iqRv-_sIgUyKjHUZzTq_Py6Mtkytq8ICFYErXnLeVIEgQzc9DvJL9ldQr16FiW-zwki2ST3YWx86mfwMQPgutJHtjQGJCpcapZXBZ2cVaoMc7evkBKfiP0h5FDLOf2bKq0Vr3sCb6FOwGtT-p_88fmF_3uKfcF09IQnr2Rox2vLLz_XU66tnTdk6NcEGfY8oEbZvHn62oEit0X5ULBNwxhoml-_vGClEIB7KQazIxvRsUH97ZyjIv4HBAbTheTdnVL-zC3EXv9y00Uf8qSy_xuQIzpaXBKgHvHvZ277kbMXvBzBimbnRCqjAPH0FDPzN-Bp3OBTnpfkM2bAMVnUdNQ.jpg"
       },
       {
         "type": "photo",
-        "url": "https://cdn4.telesco.pe/file/gYH5S2ES0axv95hNV6HoBwqeSL0RO7a-HB7D1WB1OZ1_tLk7RPQi2nIeafbsUuUw60g-xm6CDdiCxSo2AA-Cgn980ntq7a32q7JlI1S9J3JOhSJ7ZFouuZciZhc8_jA6eTm8y5zKA8jqxMRoPrjyxgt6uM5fd7nYQPyn92TfJDvB4CzIn6qV2XHURLieSokSjnrCaMxyk6IXFettZfrF4X2DEEsu20Odiep62aWpdNjqr5Q5s5wF8K3s_jZOVOwAjpS7DtkQmNWeV6EKGoPkKlqAZa7IHlzMhZReZZxDm9zOaLAfOByduPaonWvN6TLI-QeEmpd12W6WdJJGD0gfPg.jpg"
+        "url": "https://cdn4.telesco.pe/file/MeOxtwwtXNznKS4d5fX3teowlKEh8tKLrf0IGZzRcs5CgdVEbz_Wp_uTrzjlrhEO1trGNzRCcrzwhg-BsBdoCzcJoOr7ophwJZ9CRslze7SeoeExbpCyNiYLe7Twdv0JEb-81bpGXwiNXzCF3b_ckKFiXppDepAICzbCtafy5UZL2nUeYlnJLACJvVeDvRbd1V195mIq1UK9uNAz1es6kB8YlcJHcfvb82yjcr-QSR4ueHUhdyIp3ClFMS8g1Elqkv44ChkfL_JjRWeR_3VWFoislrknbcMwAw9kAEpLNr5yp6pppCEHi5A9iZ7NkhqMu897uJkPa4IoGiKIjepkpw.jpg"
       }
     ]
   }
